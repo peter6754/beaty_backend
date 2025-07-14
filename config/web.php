@@ -120,7 +120,6 @@ $config = [
     'as access' => [
         'class' => 'mdm\admin\components\AccessControl',
         'allowActions' => [
-            'rbac/*',
             'api/*',
             'site/*',
             'category/*',
