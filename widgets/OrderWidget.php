@@ -21,7 +21,7 @@ class OrderWidget extends Widget
         } else {
             foreach ($category as $category_item) {
                 $category_data[$category_item->id] =
-                    '<div style="display: flex"><div style="background-color: '.$category_item->color.'" class="select-category-image"><img src="'.$category_item->getImageUrl("x55").'"/></div><span class="select-category-title">'.$category_item->name.'</span></div>';
+                    '<div style="display: flex"><div style="background-color: '.$category_item->color.'" class="select-category-image"><img src="'.$category_item->getImageUrl("66x55").'"/></div><span class="select-category-title">'.$category_item->name.'</span></div>';
             }
         }
 
