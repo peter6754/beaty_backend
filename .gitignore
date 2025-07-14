@@ -1,0 +1,60 @@
+# phpstorm project files
+.idea
+*.iml
+
+# netbeans project files
+nbproject
+
+# zend studio for eclipse project files
+.buildpath
+.project
+.settings
+
+# windows thumbnail cache
+Thumbs.db
+
+# composer vendor dir
+/vendor
+
+# Mac DS_Store Files
+.DS_Store
+
+# phpunit itself is not needed
+phpunit.phar
+
+# local phpunit config
+/phpunit.xml
+.phpunit.result.cache
+
+tests/_output/*
+tests/_support/_generated
+
+#vagrant folder
+/.vagrant
+
+/web/yii2images
+
+# sublime text project / workspace files
+*.sublime-project
+*.sublime-workspace
+
+# visual studio code project files
+.vscode
+
+# cubrid install dir
+/cubrid
+
+# composer.lock in applications is ignored since it's automatically created by composer when application is installed
+/apps/*/composer.lock
+deploy.sh
+
+# ignore dev installed apps and extensions
+/extensions
+/packages
+/apps
+
+# NPM packages
+/node_modules
+*-lock.json
+*.lock
+.env
