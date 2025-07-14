@@ -81,21 +81,38 @@ class Coupon extends \yii\db\ActiveRecord
 
     public function upload()
     {
-        if ($this->image) {
-            // Ручная валидация файла
-            $allowedExtensions = ['png', 'jpg', 'jpeg'];
-            if (! in_array(strtolower($this->image->extension), $allowedExtensions)) {
-                return false;
+        if ($this->image && $this->image->error === UPLOAD_ERR_OK) {
+            // Создаем папку если её нет
+            $uploadDir = Yii::getAlias('@webroot/images/coupons/');
+            if (! is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
             }
 
-            // Проверяем размер файла (максимум 5MB)
-            if ($this->image->size > 5 * 1024 * 1024) {
-                return false;
+            // Безопасная очистка имени файла
+            $originalName = $this->image->baseName;
+            $extension = $this->image->extension;
+
+            // Удаляем опасные символы и приводим к безопасному виду
+            $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalName);
+            $safeName = trim($safeName, '_');
+
+            // Если имя пустое после очистки, используем timestamp
+            if (empty($safeName)) {
+                $safeName = 'image_'.time();
             }
 
-            $fileName = uniqid().'.'.$this->image->extension;
-            $uploadPath = Yii::getAlias('@webroot/images/coupons/').$fileName;
+            // Проверяем уникальность и добавляем суффикс если нужно
+            $fileName = $safeName.'.'.$extension;
+            $uploadPath = $uploadDir.$fileName;
+            $counter = 1;
 
+            while (file_exists($uploadPath)) {
+                $fileName = $safeName.'_'.$counter.'.'.$extension;
+                $uploadPath = $uploadDir.$fileName;
+                $counter++;
+            }
+
+            // Сохраняем файл
             if ($this->image->saveAs($uploadPath)) {
                 // Удаляем старое изображение если есть
                 $oldImagePath = $this->getImagePath();

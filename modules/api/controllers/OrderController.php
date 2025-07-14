@@ -4,9 +4,12 @@ namespace app\modules\api\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\web\HttpException;
 use app\models\Product;
 use app\models\Coupon;
 use app\models\OrderApplication;
+use app\models\OrderCoupon;
+use app\models\Orders;
 
 class OrderController extends Controller
 {
@@ -19,8 +22,8 @@ class OrderController extends Controller
         foreach ($product_query as $product_item) {
             $products[] = [
                 "id" => $product_item->id,
-                "html" => '<div style="display: flex"><div style="width: calc(100% - 100px);">' . $product_item->name . '</div><div>' . $product_item->price . ' руб.</div></div>',
-                "text" => '<div style="display: flex"><div style="width: calc(100% - 100px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' . $product_item->name . '</div><div>' . $product_item->price . ' руб.</div></div>'
+                "html" => '<div style="display: flex"><div style="width: calc(100% - 100px);">'.$product_item->name.'</div><div>'.$product_item->price.' руб.</div></div>',
+                "text" => '<div style="display: flex"><div style="width: calc(100% - 100px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">'.$product_item->name.'</div><div>'.$product_item->price.' руб.</div></div>'
             ];
         }
 
@@ -31,13 +34,13 @@ class OrderController extends Controller
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $hour = (int)date("H", $date == 0 ? (time() + 7200) : strtotime("Y-m-d", $date));
+        $hour = (int) date("H", $date == 0 ? (time() + 7200) : strtotime("Y-m-d", $date));
 
         $times = [];
-        for($i = $hour ; $i <= 23; $i++) {
+        for ($i = $hour; $i <= 23; $i++) {
             $times[] = [
                 "id" => $i,
-                "text" => $i . ':00'
+                "text" => $i.':00'
             ];
         }
 
@@ -81,9 +84,10 @@ class OrderController extends Controller
      *)
      * @throws HttpException
      */
-    public function actionCreate() {
+    public function actionCreate()
+    {
 
-        if(!$this->user) {
+        if (! $this->user) {
             Yii::$app->response->statusCode = 401;
             return ["success" => false, "message" => "Token не найден"];
         }
@@ -92,11 +96,11 @@ class OrderController extends Controller
         $model->setAttributes($this->request->post());
         $model->user_id = $this->user->id;
 
-        if($model->order_coupon_id == 0) {
+        if ($model->order_coupon_id == 0) {
             $model->order_coupon_id = null;
         }
 
-        if(!$model->save()) {
+        if (! $model->save()) {
             Yii::$app->response->statusCode = 400;
             return ["success" => false, "message" => $this->getError($model)];
         }
@@ -118,7 +122,7 @@ class OrderController extends Controller
             "url" => null
         ];
 
-        if($model->order_coupon_id != null) {
+        if ($model->order_coupon_id != null) {
             $coupon = Coupon::findOne($model->order_coupon_id);
 
             $order = new OrderCoupon([
@@ -181,13 +185,13 @@ class OrderController extends Controller
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        if(!$this->user) {
+        if (! $this->user) {
             Yii::$app->response->statusCode = 401;
             return ["success" => false, "message" => "Token не найден"];
         }
 
         $model = OrderApplication::findOne(Yii::$app->request->post("order_id"));
-        if(!$model) {
+        if (! $model) {
             Yii::$app->response->statusCode = 400;
             return ["success" => false, "message" => "Заказ не найден"];
         }
@@ -240,7 +244,7 @@ class OrderController extends Controller
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        if(!$this->user) {
+        if (! $this->user) {
             Yii::$app->response->statusCode = 401;
             return ["success" => false, "message" => "Token не найден"];
         }

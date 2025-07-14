@@ -5,6 +5,7 @@ namespace app\modules\api\controllers;
 use Yii;
 use yii\helpers\Url;
 use yii\web\Controller;
+use yii\web\HttpException;
 use app\models\Product;
 
 class ProductController extends BaseController

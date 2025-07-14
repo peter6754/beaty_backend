@@ -4,6 +4,7 @@ namespace app\modules\api\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\web\HttpException;
 use app\models\MasterForm;
 use app\models\Master;
 use yii\helpers\Url;

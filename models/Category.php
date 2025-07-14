@@ -27,7 +27,8 @@ class Category extends \yii\db\ActiveRecord
             'active',
             'name',
             'color',
-            'image_path'
+            'image_path', // Оставляем для обратной совместимости
+            'image_id'    // Новое поле для ссылки на Image
         ];
     }
 
@@ -45,7 +46,7 @@ class Category extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['active'], 'integer'],
+            [['active', 'image_id'], 'integer'],
             [['image'], 'file', 'extensions' => 'png, jpg, jpeg'],
             [['name', 'color'], 'required'],
             [['name', 'color', 'image_path'], 'string', 'max' => 255],
@@ -66,34 +67,49 @@ class Category extends \yii\db\ActiveRecord
             'color' => 'Цвет'
         ];
     }
-
     public function upload()
     {
         if ($this->image && $this->image->error === UPLOAD_ERR_OK) {
-            // Создаем папку если её нет
-            $uploadDir = Yii::getAlias('@webroot/images/categories/');
-            if (! is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
+            // Используем существующую таблицу image
+            $image = Image::createFromUpload($this->image);
 
-            $fileName = uniqid().'.'.$this->image->extension;
-            $uploadPath = $uploadDir.$fileName;
+            if ($image) {
+                // Связываем изображение с категорией
+                $image->itemId = $this->id; // ID текущей категории
+                $image->modelName = 'Category';
+                $image->save();
 
-            if ($this->image->saveAs($uploadPath)) {
-                // Удаляем старое изображение если есть
-                $oldImagePath = $this->getImagePath();
-                if ($oldImagePath) {
-                    $oldPath = Yii::getAlias('@webroot/').$oldImagePath;
-                    if (file_exists($oldPath)) {
-                        @unlink($oldPath);
+                // Удаляем связь со старым изображением
+                $oldImageId = $this->image_id;
+
+                // Устанавливаем новое изображение
+                $this->image_id = $image->id;
+                $this->image_path = $image->filePath; // Дублируем для совместимости
+
+                // Если было старое изображение, удаляем его
+                if ($oldImageId && $oldImageId != $image->id) {
+                    $oldImage = Image::findOne($oldImageId);
+                    if ($oldImage) {
+                        $filePath = $oldImage->getFilePath();
+                        if (file_exists($filePath)) {
+                            @unlink($filePath);
+                        }
+                        $oldImage->delete();
                     }
                 }
 
-                $this->setImagePath('images/categories/'.$fileName);
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Связь с изображением
+     */
+    public function getImage()
+    {
+        return $this->hasOne(\app\models\Image::class, ['id' => 'image_id']);
     }
 
     /**
@@ -103,6 +119,21 @@ class Category extends \yii\db\ActiveRecord
      */
     public function getImageUrl($size = null)
     {
+        // Сначала пробуем получить изображение через новую систему
+        if ($this->image_id) {
+            $image = $this->image; // Используем связь
+            if ($image) {
+                return $image->getUrl();
+            }
+
+            // Если связь не работает, пробуем найти изображение напрямую
+            $image = Image::findOne($this->image_id);
+            if ($image) {
+                return $image->getUrl();
+            }
+        }
+
+        // Fallback на старую систему для совместимости
         $imagePath = $this->getImagePath();
         if ($imagePath) {
             $fullImagePath = Yii::getAlias('@webroot/').$imagePath;

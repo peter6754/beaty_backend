@@ -4,6 +4,7 @@ namespace app\modules\api\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\web\HttpException;
 use app\models\LoginForm;
 use yii\web\UploadedFile;
 use app\models\User;
@@ -54,15 +55,15 @@ class UserController extends BaseController
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        if(!Yii::$app->request->post("phone")) {
+        if (! Yii::$app->request->post("phone")) {
             Yii::$app->response->statusCode = 400;
             return ["success" => false, "message" => "Номер телефона не указан"];
         }
 
         $user = User::findOne(["phone" => preg_replace('/[^0-9]/', '', Yii::$app->request->post("phone"))]);
-        if(!$user) {
+        if (! $user) {
             $user = new User(["phone" => Yii::$app->request->post("phone")]);
-            if(!$user->save()) {
+            if (! $user->save()) {
                 Yii::$app->response->statusCode = 400;
                 return ["success" => false, "message" => $this->getError($user)];
             }
@@ -121,24 +122,25 @@ class UserController extends BaseController
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        if(!Yii::$app->request->post("phone")) {
+        if (! Yii::$app->request->post("phone")) {
             Yii::$app->response->statusCode = 400;
             return ["success" => false, "message" => "Номер телефона не указан"];
         }
-        
+
         $user = User::findOne(["phone" => preg_replace('/[^0-9]/', '', Yii::$app->request->post("phone"))]);
-        if(!$user) {
+        if (! $user) {
             Yii::$app->response->statusCode = 400;
             return ["success" => false, "message" => "Пользователь не найден"];
         }
 
         $code = AuthCode::findOne(["user_id" => $user->id, "code" => Yii::$app->request->post("code")]);
-        if(!$code) {
+        if (! $code) {
             Yii::$app->response->statusCode = 400;
             return ["success" => false, "message" => "Код введен неправильно"];
         }
 
-        $user->token = Yii::$app->security->generateRandomString();;
+        $user->token = Yii::$app->security->generateRandomString();
+        ;
         $user->save();
 
         $code->delete();
@@ -174,7 +176,7 @@ class UserController extends BaseController
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        if(!$this->user) {
+        if (! $this->user) {
             Yii::$app->response->statusCode = 401;
             return ["success" => false, "message" => "Token не найден"];
         }
@@ -233,7 +235,7 @@ class UserController extends BaseController
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        if(!$this->user) {
+        if (! $this->user) {
             Yii::$app->response->statusCode = 401;
             return ["success" => false, "message" => "Token не найден"];
         }
@@ -242,7 +244,7 @@ class UserController extends BaseController
         $this->user->email = trim(Yii::$app->request->post("email", $this->user->email));
         $this->user->fcm_token = Yii::$app->request->post("fcm_token", $this->user->fcm_token);
 
-        if(!$this->user->save())  {
+        if (! $this->user->save()) {
             Yii::$app->response->statusCode = 400;
             return ["success" => false, "message" => "Error save"];
         }
@@ -250,7 +252,8 @@ class UserController extends BaseController
         return $this->getProfile($this->user);
     }
 
-    protected function getProfile($user) {
+    protected function getProfile($user)
+    {
 
         return [
             "id" => $user->id,
