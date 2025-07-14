@@ -82,12 +82,19 @@ class CouponController extends Controller
             if ($model->load($this->request->post())) {
                 $model->image = UploadedFile::getInstance($model, 'image');
 
-                if ($model->image && $model->upload()) {
-                    // Изображение успешно загружено, путь сохранен в image_path
-                }
+                // Валидируем основные данные модели
+                if ($model->validate()) {
+                    // Если изображение загружено, пытаемся его обработать
+                    if ($model->image) {
+                        if (! $model->upload()) {
+                            $model->addError('image', 'Не удалось загрузить изображение. Проверьте формат (png, jpg, jpeg) и размер файла (макс. 5MB).');
+                        }
+                    }
 
-                if ($model->save()) {
-                    return $this->redirect(['view', 'id' => $model->id]);
+                    // Сохраняем модель только если нет ошибок
+                    if (! $model->hasErrors() && $model->save()) {
+                        return $this->redirect(['view', 'id' => $model->id]);
+                    }
                 }
             }
         } else {
@@ -120,12 +127,19 @@ class CouponController extends Controller
         if ($this->request->isPost && $model->load($this->request->post())) {
             $model->image = UploadedFile::getInstance($model, 'image');
 
-            if ($model->image && $model->upload()) {
-                // Изображение успешно загружено, путь сохранен в image_path
-            }
+            // Валидируем основные данные модели
+            if ($model->validate()) {
+                // Если изображение загружено, пытаемся его обработать
+                if ($model->image) {
+                    if (! $model->upload()) {
+                        $model->addError('image', 'Не удалось загрузить изображение. Проверьте формат (png, jpg, jpeg) и размер файла (макс. 5MB).');
+                    }
+                }
 
-            if ($model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                // Сохраняем модель только если нет ошибок
+                if (! $model->hasErrors() && $model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
         }
 

@@ -52,7 +52,7 @@ class Coupon extends \yii\db\ActiveRecord
             [['category_id', 'name', 'description', 'amount', 'price'], 'required'],
             [['category_id'], 'integer'],
             [['amount', 'price'], 'number'],
-            [['image'], 'file', 'extensions' => 'png, jpg, jpeg'],
+            [['image'], 'safe'], // Изменено с 'file' на 'safe' чтобы избежать автоматической валидации
             [['description'], 'string'],
             [['name', 'image_path'], 'string', 'max' => 255],
         ];
@@ -82,6 +82,17 @@ class Coupon extends \yii\db\ActiveRecord
     public function upload()
     {
         if ($this->image) {
+            // Ручная валидация файла
+            $allowedExtensions = ['png', 'jpg', 'jpeg'];
+            if (! in_array(strtolower($this->image->extension), $allowedExtensions)) {
+                return false;
+            }
+
+            // Проверяем размер файла (максимум 5MB)
+            if ($this->image->size > 5 * 1024 * 1024) {
+                return false;
+            }
+
             $fileName = uniqid().'.'.$this->image->extension;
             $uploadPath = Yii::getAlias('@webroot/images/coupons/').$fileName;
 

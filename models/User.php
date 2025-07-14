@@ -19,6 +19,22 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 
     public $image;
 
+    /**
+     * {@inheritdoc}
+     */
+    public function attributes()
+    {
+        return [
+            'id',
+            'phone',
+            'name',
+            'email',
+            'fcm_token',
+            'token',
+            'password'
+        ];
+    }
+
     public function behaviors()
     {
         return [
@@ -46,7 +62,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             ['phone', 'match', 'pattern' => '/^\+7\([0-9]{3}\)\s[0-9]{3}\-[0-9]{2}\-[0-9]{2}$/', 'message' => 'Пример: +7(999) 999-99-99'],
             ['email', 'email'],
             ['email', 'unique'],
-            [['email', 'token', 'fcm_token'], 'string', 'max' => 255],
+            [['email', 'token', 'fcm_token', 'password'], 'string', 'max' => 255],
         ];
     }
 

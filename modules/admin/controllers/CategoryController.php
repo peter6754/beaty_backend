@@ -76,12 +76,17 @@ class CategoryController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->image = UploadedFile::getInstance($model, 'image');
 
-            if ($model->image && $model->upload()) {
-                // Изображение успешно загружено, путь сохранен в image_path
-            }
+            // Сначала валидируем модель без сохранения
+            if ($model->validate()) {
+                // Если есть новое изображение, загружаем его
+                if ($model->image && $model->upload()) {
+                    // Изображение успешно загружено, путь сохранен в image_path
+                }
 
-            if ($model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                // Теперь сохраняем модель
+                if ($model->save(false)) { // false = пропустить валидацию, т.к. уже провалидировали
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
         }
 
@@ -104,12 +109,17 @@ class CategoryController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->image = UploadedFile::getInstance($model, 'image');
 
-            if ($model->image && $model->upload()) {
-                // Изображение успешно загружено, путь сохранен в image_path
-            }
+            // Сначала валидируем модель без сохранения
+            if ($model->validate()) {
+                // Если есть новое изображение, загружаем его
+                if ($model->image && $model->upload()) {
+                    // Изображение успешно загружено, путь сохранен в image_path
+                }
 
-            if ($model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                // Теперь сохраняем модель
+                if ($model->save(false)) { // false = пропустить валидацию, т.к. уже провалидировали
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
         }
 

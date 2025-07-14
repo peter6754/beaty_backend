@@ -69,9 +69,15 @@ class Category extends \yii\db\ActiveRecord
 
     public function upload()
     {
-        if ($this->image) {
+        if ($this->image && $this->image->error === UPLOAD_ERR_OK) {
+            // Создаем папку если её нет
+            $uploadDir = Yii::getAlias('@webroot/images/categories/');
+            if (! is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
             $fileName = uniqid().'.'.$this->image->extension;
-            $uploadPath = Yii::getAlias('@webroot/images/categories/').$fileName;
+            $uploadPath = $uploadDir.$fileName;
 
             if ($this->image->saveAs($uploadPath)) {
                 // Удаляем старое изображение если есть
