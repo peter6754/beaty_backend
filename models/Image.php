@@ -4,18 +4,6 @@ namespace app\models;
 
 use Yii;
 
-/**
- * Модель для работы с существующей таблицей image
- * 
- * @property int $id
- * @property string $filePath Путь к файлу
- * @property int $itemId ID связанной записи
- * @property int $isMain Основное изображение
- * @property string $modelName Название модели
- * @property string $urlAlias URL алиас
- * @property string $name Название файла
- * @property int $sorted Порядок сортировки
- */
 class Image extends \yii\db\ActiveRecord
 {
     /**

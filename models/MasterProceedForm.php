@@ -5,25 +5,6 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 
-/**
- * @SWG\Definition(required={"hash", "work_city", "work_street", "work_house", "live_city", "live_street", "live_house", "search_radius"})
- *
- * @SWG\Property(property="hash", type="string", description="Master registration hash")
- * @SWG\Property(property="work_city", type="string", description="Work city")
- * @SWG\Property(property="work_street", type="string", description="Work street")
- * @SWG\Property(property="work_house", type="string", description="Work house number")
- * @SWG\Property(property="work_lat", type="number", format="float", description="Work location latitude")
- * @SWG\Property(property="work_lon", type="number", format="float", description="Work location longitude")
- * @SWG\Property(property="live_city", type="string", description="Living city")
- * @SWG\Property(property="live_street", type="string", description="Living street")
- * @SWG\Property(property="live_house", type="string", description="Living house number")
- * @SWG\Property(property="live_apartment", type="string", description="Living apartment number")
- * @SWG\Property(property="live_lat", type="number", format="float", description="Living location latitude")
- * @SWG\Property(property="live_lon", type="number", format="float", description="Living location longitude")
- * @SWG\Property(property="search_radius", type="integer", description="Search radius in kilometers")
- * @SWG\Property(property="client_gender", type="integer", description="Preferred client gender (1 - male, 0 - female)")
- * @SWG\Property(property="products", type="array", @SWG\Items(type="integer"), description="Array of product IDs")
- */
 class MasterProceedForm extends Model
 {
     public $hash;

@@ -7,15 +7,6 @@ use yii\data\ActiveDataProvider;
 use app\models\Coupon;
 
 /**
- * @SWG\Definition()
- *
- * @SWG\Property(property="id", type="integer", description="Coupon ID for search")
- * @SWG\Property(property="category_id", type="integer", description="Category ID for search")
- * @SWG\Property(property="amount", type="integer", description="Coupon amount for search")
- * @SWG\Property(property="price", type="integer", description="Coupon price for search")
- * @SWG\Property(property="name", type="string", description="Coupon name for search")
- * @SWG\Property(property="description", type="string", description="Coupon description for search")
- *
  * CouponSearch represents the model behind the search form of `app\models\Coupon`.
  */
 class CouponSearch extends Coupon
@@ -36,7 +27,6 @@ class CouponSearch extends Coupon
      */
     public function scenarios()
     {
-        // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
@@ -51,8 +41,6 @@ class CouponSearch extends Coupon
     {
         $query = Coupon::find();
 
-        // add conditions that should always apply here
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -60,12 +48,9 @@ class CouponSearch extends Coupon
         $this->load($params);
 
         if (! $this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
         }
 
-        // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'category_id' => $this->category_id,

@@ -6,12 +6,6 @@ use Yii;
 use yii\base\Model;
 
 /**
- * @SWG\Definition(required={"phone", "password"})
- *
- * @SWG\Property(property="phone", type="string", description="User phone number in format +7(999) 999-99-99")
- * @SWG\Property(property="password", type="string", description="User password")
- * @SWG\Property(property="rememberMe", type="boolean", description="Remember me flag")
- *
  * LoginForm is the model behind the login form.
  */
 class LoginForm extends Model

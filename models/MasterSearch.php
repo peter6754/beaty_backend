@@ -7,30 +7,6 @@ use yii\data\ActiveDataProvider;
 use app\models\Master;
 
 /**
- * @SWG\Definition()
- *
- * @SWG\Property(property="id", type="integer", description="Master ID for search")
- * @SWG\Property(property="user_id", type="integer", description="User ID for search")
- * @SWG\Property(property="balance", type="integer", description="Master balance for search")
- * @SWG\Property(property="gender", type="integer", description="Master gender for search")
- * @SWG\Property(property="birthday", type="integer", description="Master birthday for search")
- * @SWG\Property(property="search_radius", type="integer", description="Search radius for search")
- * @SWG\Property(property="client_gender", type="integer", description="Client gender preference for search")
- * @SWG\Property(property="status", type="integer", description="Master status for search")
- * @SWG\Property(property="lastname", type="string", description="Master last name for search")
- * @SWG\Property(property="firstname", type="string", description="Master first name for search")
- * @SWG\Property(property="middlename", type="string", description="Master middle name for search")
- * @SWG\Property(property="work_city", type="string", description="Work city for search")
- * @SWG\Property(property="work_street", type="string", description="Work street for search")
- * @SWG\Property(property="work_house", type="string", description="Work house for search")
- * @SWG\Property(property="live_city", type="string", description="Living city for search")
- * @SWG\Property(property="live_street", type="string", description="Living street for search")
- * @SWG\Property(property="live_house", type="string", description="Living house for search")
- * @SWG\Property(property="work_lat", type="number", format="float", description="Work latitude for search")
- * @SWG\Property(property="work_lon", type="number", format="float", description="Work longitude for search")
- * @SWG\Property(property="live_lat", type="number", format="float", description="Living latitude for search")
- * @SWG\Property(property="live_lon", type="number", format="float", description="Living longitude for search")
- *
  * MasterSearch represents the model behind the search form of `app\models\Master`.
  */
 class MasterSearch extends Master

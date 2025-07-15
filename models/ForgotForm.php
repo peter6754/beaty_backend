@@ -6,10 +6,6 @@ use Yii;
 use yii\base\Model;
 
 /**
- * @SWG\Definition(required={"email"})
- *
- * @SWG\Property(property="email", type="string", format="email", description="User email address for password recovery")
- *
  * ForgotForm is the model behind the forgot password form.
  */
 class ForgotForm extends Model

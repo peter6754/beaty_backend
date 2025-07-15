@@ -4,14 +4,6 @@ namespace app\models;
 
 use Yii;
 
-/**
- * @SWG\Definition(required={"id", "name"})
- *
- * @SWG\Property(property="id", type="integer")
- * @SWG\Property(property="name", type="string")
- * @SWG\Property(property="price", type="number")
- * @SWG\Property(property="caregory", type="object", ref="#/definitions/Category")
- */
 class Product extends \yii\db\ActiveRecord
 {
     /**

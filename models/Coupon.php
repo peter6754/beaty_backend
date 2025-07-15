@@ -4,17 +4,6 @@ namespace app\models;
 
 use Yii;
 
-/**
- * @SWG\Definition(required={"id", "name"})
- *
- * @SWG\Property(property="id", type="integer")
- * @SWG\Property(property="name", type="string")
- * @SWG\Property(property="description", type="string")
- * @SWG\Property(property="amount", type="number")
- * @SWG\Property(property="price", type="number")
- * @SWG\Property(property="caregory", type="object", ref="#/definitions/Category")
- * @SWG\Property(property="image", type="string")
- */
 class Coupon extends \yii\db\ActiveRecord
 {
     public $image;
@@ -52,7 +41,7 @@ class Coupon extends \yii\db\ActiveRecord
             [['category_id', 'name', 'description', 'amount', 'price'], 'required'],
             [['category_id'], 'integer'],
             [['amount', 'price'], 'number'],
-            [['image'], 'safe'], // Изменено с 'file' на 'safe' чтобы избежать автоматической валидации
+            [['image'], 'safe'],
             [['description'], 'string'],
             [['name', 'image_path'], 'string', 'max' => 255],
         ];

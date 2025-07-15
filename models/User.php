@@ -4,16 +4,6 @@ namespace app\models;
 
 use Yii;
 
-/**
- * @SWG\Definition(required={"phone", "name"})
- *
- * @SWG\Property(property="id", type="integer")
- * @SWG\Property(property="name", type="string")
- * @SWG\Property(property="email", type="string")
- * @SWG\Property(property="phone", type="string")
- * @SWG\Property(property="image", type="file")
- * @SWG\Property(property="token", type="string")
- */
 class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
 
@@ -32,13 +22,6 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'fcm_token',
             'token',
             'password'
-        ];
-    }
-
-    public function behaviors()
-    {
-        return [
-            // ImageBehave removed - no longer using yii2images module
         ];
     }
 

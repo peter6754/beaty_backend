@@ -9,36 +9,43 @@ use yii\web\HttpException;
 use app\models\OrderCoupon;
 use app\models\Coupon;
 
+use OpenApi\Attributes as OA;
+
 class CouponController extends BaseController
 {
 
-    /**
-     * @SWG\Get(
-     *    path = "/coupon/list",
-     *    tags = {"Coupon"},
-     *    summary = "Список купонов",
-     *    security={{"access_token":{}}},
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Список купонов",
-     *      @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref="#/definitions/Coupon")
-     *      ),
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 401,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Get(
+        path: "/api/coupon/list",
+        summary: "Получение списка купонов",
+        tags: ["Coupon"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Список купонов",
+                content: new OA\JsonContent(
+                    type: "array",
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: "id", type: "integer"),
+                            new OA\Property(property: "name", type: "string"),
+                            new OA\Property(property: "category", type: "object", properties: [
+                                new OA\Property(property: "id", type: "integer"),
+                                new OA\Property(property: "name", type: "string"),
+                                new OA\Property(property: "color", type: "string"),
+                                new OA\Property(property: "image", type: "string", format: "uri")
+                            ]),
+                            new OA\Property(property: "amount", type: "number"),
+                            new OA\Property(property: "price", type: "number"),
+                            new OA\Property(property: "description", type: "string"),
+                            new OA\Property(property: "image", type: "string", format: "uri")
+                        ]
+                    )
+                )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionList()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -71,38 +78,33 @@ class CouponController extends BaseController
         return $data;
     }
 
-    /**
-     * @SWG\Post(
-     *    path = "/coupon/order",
-     *    tags = {"Coupon"},
-     *    summary = "Купить купон",
-     *    security={{"access_token":{}}},
-     *    @SWG\Parameter(
-     *         name="body",
-     *         in="body",
-     *         required=true,
-     *         @SWG\Schema(
-     *             type="object",
-     *             @SWG\Property(
-     *                 property="coupon_id",
-     *                 type="integer",
-     *                 description="ID купона",
-     *             ),
-     *         )
-     *     ),
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Ссылка на оплату купорна",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Post(
+        path: "/api/coupon/order",
+        summary: "Заказ купона",
+        tags: ["Coupon"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "coupon_id", type: "integer")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "URL для оплаты",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "url", type: "string", format: "uri")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса"),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionOrder()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -136,33 +138,42 @@ class CouponController extends BaseController
         return ["url" => $url];
     }
 
-    /**
-     * @SWG\Get(
-     *    path = "/coupon/order-list",
-     *    tags = {"Coupon"},
-     *    summary = "Список куплных купонов",
-     *    security={{"access_token":{}}},
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Список купонов",
-     *      @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref="#/definitions/OrderCoupon")
-     *      ),
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 401,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Get(
+        path: "/api/coupon/order-list",
+        summary: "Получение списка заказов купонов",
+        tags: ["Coupon"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Список заказов купонов",
+                content: new OA\JsonContent(
+                    type: "array",
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: "id", type: "integer"),
+                            new OA\Property(property: "coupon", type: "object", properties: [
+                                new OA\Property(property: "name", type: "string"),
+                                new OA\Property(property: "category", type: "object", properties: [
+                                    new OA\Property(property: "id", type: "integer"),
+                                    new OA\Property(property: "name", type: "string"),
+                                    new OA\Property(property: "color", type: "string"),
+                                    new OA\Property(property: "image", type: "string", format: "uri")
+                                ]),
+                                new OA\Property(property: "amount", type: "number"),
+                                new OA\Property(property: "price", type: "number"),
+                                new OA\Property(property: "description", type: "string"),
+                                new OA\Property(property: "image", type: "string", format: "uri")
+                            ]),
+                            new OA\Property(property: "date", type: "string", format: "date-time"),
+                            new OA\Property(property: "status", type: "integer")
+                        ]
+                    )
+                )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionOrderList()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;

@@ -97,8 +97,8 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                "api/swagger" => "api/default/swagger",
-                "api/swagger-json" => "api/default/swagger-json",
+                'api/swagger' => 'api/swagger/default/doc',
+                'api/swagger.json' => 'api/swagger/default/api',
             ],
         ],
     ],

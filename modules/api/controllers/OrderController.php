@@ -11,8 +11,35 @@ use app\models\OrderApplication;
 use app\models\OrderCoupon;
 use app\models\Orders;
 
+use OpenApi\Attributes as OA;
+
 class OrderController extends Controller
 {
+    #[OA\Get(
+        path: "/api/order/list/{id}",
+        summary: "Получение списка продуктов для заказа",
+        tags: ["Order"],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Список продуктов",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "results", type: "array", items: new OA\Items(
+                            properties: [
+                                new OA\Property(property: "id", type: "integer"),
+                                new OA\Property(property: "html", type: "string"),
+                                new OA\Property(property: "text", type: "string")
+                            ]
+                        ))
+                    ]
+                )
+            )
+        ]
+    )]
     public function actionList($id)
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -30,6 +57,30 @@ class OrderController extends Controller
         return ["results" => $products];
     }
 
+    #[OA\Get(
+        path: "/api/order/time",
+        summary: "Получение доступного времени для заказа",
+        tags: ["Order"],
+        parameters: [
+            new OA\Parameter(name: "date", in: "query", schema: new OA\Schema(type: "integer"))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Доступное время",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "results", type: "array", items: new OA\Items(
+                            properties: [
+                                new OA\Property(property: "id", type: "integer"),
+                                new OA\Property(property: "text", type: "string")
+                            ]
+                        ))
+                    ]
+                )
+            )
+        ]
+    )]
     public function actionTime($date = 0)
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -47,6 +98,20 @@ class OrderController extends Controller
         return ["results" => $times];
     }
 
+    #[OA\Get(
+        path: "/api/order/coupon/{id}",
+        summary: "Получение информации о купоне для продукта",
+        tags: ["Order"],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "HTML с информацией о купоне"
+            )
+        ]
+    )]
     public function actionCoupon($id)
     {
         $this->layout = false;
@@ -60,30 +125,56 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * @SWG\Post(
-     *    path = "/order/create",
-     *    tags = {"Order"},
-     *    summary = "Создать заказ",
-     *    @SWG\Parameter(
-     *         name="body",
-     *         in="body",
-     *         required=true,
-     *         @SWG\Schema(ref = "#/definitions/OrderApplication")
-     *     ),
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Информация о заказа",
-     *      @SWG\Schema(ref = "#/definitions/OrderApplication")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Post(
+        path: "/api/order/create",
+        summary: "Создание заказа",
+        tags: ["Order"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "order_coupon_id", type: "integer"),
+                    new OA\Property(property: "name", type: "string"),
+                    new OA\Property(property: "phone", type: "string"),
+                    new OA\Property(property: "city", type: "string"),
+                    new OA\Property(property: "street", type: "string"),
+                    new OA\Property(property: "house", type: "string"),
+                    new OA\Property(property: "apartment", type: "string"),
+                    new OA\Property(property: "entrance", type: "string"),
+                    new OA\Property(property: "floor", type: "string"),
+                    new OA\Property(property: "intercom", type: "string"),
+                    new OA\Property(property: "date", type: "string", format: "date"),
+                    new OA\Property(property: "time", type: "string")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Созданный заказ",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "phone", type: "string"),
+                        new OA\Property(property: "city", type: "string"),
+                        new OA\Property(property: "street", type: "string"),
+                        new OA\Property(property: "house", type: "string"),
+                        new OA\Property(property: "apartment", type: "string"),
+                        new OA\Property(property: "entrance", type: "string"),
+                        new OA\Property(property: "floor", type: "string"),
+                        new OA\Property(property: "intercom", type: "string"),
+                        new OA\Property(property: "date", type: "string", format: "date"),
+                        new OA\Property(property: "time", type: "string"),
+                        new OA\Property(property: "status", type: "integer"),
+                        new OA\Property(property: "url", type: "string", format: "uri")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса"),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionCreate()
     {
 
@@ -156,31 +247,45 @@ class OrderController extends Controller
         return $data;
     }
 
-
-    /**
-     * @SWG\Get(
-     *    path = "/order/item",
-     *    tags = {"Order"},
-     *    summary = "Информация о заказе",
-     *    security={{"access_token":{}}},
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Информация о заказе",
-     *      @SWG\Schema(ref = "#/definitions/OrderApplication")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 403,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Post(
+        path: "/api/order/item",
+        summary: "Получение информации о заказе",
+        tags: ["Order"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "order_id", type: "integer")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Информация о заказе",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "phone", type: "string"),
+                        new OA\Property(property: "city", type: "string"),
+                        new OA\Property(property: "street", type: "string"),
+                        new OA\Property(property: "house", type: "string"),
+                        new OA\Property(property: "apartment", type: "string"),
+                        new OA\Property(property: "entrance", type: "string"),
+                        new OA\Property(property: "floor", type: "string"),
+                        new OA\Property(property: "intercom", type: "string"),
+                        new OA\Property(property: "date", type: "string", format: "date"),
+                        new OA\Property(property: "time", type: "string"),
+                        new OA\Property(property: "status", type: "integer")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса"),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionItem()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -213,33 +318,39 @@ class OrderController extends Controller
         ];
     }
 
-    /**
-     * @SWG\Get(
-     *    path = "/order/list",
-     *    tags = {"Coupon"},
-     *    summary = "Список заказов",
-     *    security={{"access_token":{}}},
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Список заказов",
-     *      @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref="#/definitions/OrderApplication")
-     *      ),
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 401,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Get(
+        path: "/api/order/order-list",
+        summary: "Получение списка заказов пользователя",
+        tags: ["Order"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Список заказов",
+                content: new OA\JsonContent(
+                    type: "array",
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: "id", type: "integer"),
+                            new OA\Property(property: "name", type: "string"),
+                            new OA\Property(property: "phone", type: "string"),
+                            new OA\Property(property: "city", type: "string"),
+                            new OA\Property(property: "street", type: "string"),
+                            new OA\Property(property: "house", type: "string"),
+                            new OA\Property(property: "apartment", type: "string"),
+                            new OA\Property(property: "entrance", type: "string"),
+                            new OA\Property(property: "floor", type: "string"),
+                            new OA\Property(property: "intercom", type: "string"),
+                            new OA\Property(property: "date", type: "string", format: "date"),
+                            new OA\Property(property: "time", type: "string"),
+                            new OA\Property(property: "status", type: "integer")
+                        ]
+                    )
+                )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionOrderList()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;

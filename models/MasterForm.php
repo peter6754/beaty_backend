@@ -5,19 +5,6 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 
-/**
- * @SWG\Definition(required={"phone", "email", "lastname", "firstname", "middlename", "birthday", "password", "password_repeat"})
- *
- * @SWG\Property(property="phone", type="string", description="Master phone number in format +7(999) 999-99-99")
- * @SWG\Property(property="email", type="string", format="email", description="Master email address")
- * @SWG\Property(property="lastname", type="string", description="Master last name")
- * @SWG\Property(property="firstname", type="string", description="Master first name")
- * @SWG\Property(property="middlename", type="string", description="Master middle name")
- * @SWG\Property(property="gender", type="integer", description="Master gender (1 - male, 0 - female)")
- * @SWG\Property(property="birthday", type="string", format="date", description="Master birthday in format d.m.Y")
- * @SWG\Property(property="password", type="string", description="Master password")
- * @SWG\Property(property="password_repeat", type="string", description="Password confirmation")
- */
 class MasterForm extends Model
 {
     public $phone;

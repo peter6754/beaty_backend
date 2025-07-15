@@ -5,13 +5,6 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 
-/**
- * @SWG\Definition(required={"phone", "name"})
- *
- * @SWG\Property(property="phone", type="string", description="User phone number in format +7(999) 999-99-99")
- * @SWG\Property(property="name", type="string", description="User name")
- * @SWG\Property(property="coupon_id", type="integer", description="Coupon ID")
- */
 class CouponForm extends Model
 {
     public $phone;

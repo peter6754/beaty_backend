@@ -10,33 +10,49 @@ use app\models\Master;
 use yii\helpers\Url;
 use YooKassa\Client;
 
+use OpenApi\Attributes as OA;
+
 class MasterController extends BaseController
 {
 
-    /**
-     * @SWG\Post(
-     *    path = "/master/register",
-     *    tags = {"Master"},
-     *    summary = "Регистрация",
-     *    @SWG\Parameter(
-     *         name="body",
-     *         in="body",
-     *         required=true,
-     *         @SWG\Schema(ref = "#/definitions/Master")
-     *     ),
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Ссылка на оплату",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Post(
+        path: "/api/master/register",
+        summary: "Регистрация мастера",
+        tags: ["Master"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "middlename", type: "string"),
+                    new OA\Property(property: "firstname", type: "string"),
+                    new OA\Property(property: "birthday", type: "string", format: "date"),
+                    new OA\Property(property: "gender", type: "integer"),
+                    new OA\Property(property: "client_gender", type: "integer"),
+                    new OA\Property(property: "work_city", type: "string"),
+                    new OA\Property(property: "work_street", type: "string"),
+                    new OA\Property(property: "work_house", type: "string"),
+                    new OA\Property(property: "live_city", type: "string"),
+                    new OA\Property(property: "live_street", type: "string"),
+                    new OA\Property(property: "live_house", type: "string"),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "URL для оплаты",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean"),
+                        new OA\Property(property: "url", type: "string", format: "uri")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса"),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionRegister()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -88,30 +104,43 @@ class MasterController extends BaseController
 
     }
 
-    /**
-     * @SWG\Get(
-     *    path = "/master/profile",
-     *    tags = {"Master"},
-     *    summary = "Информация о мастер",
-     *    security={{"access_token":{}}},
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Информация о мастере",
-     *      @SWG\Schema(ref = "#/definitions/Master")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 403,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Get(
+        path: "/api/master/profile",
+        summary: "Получение профиля мастера",
+        tags: ["Master"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Профиль мастера",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "middlename", type: "string"),
+                        new OA\Property(property: "firstname", type: "string"),
+                        new OA\Property(property: "birthday", type: "string", format: "date"),
+                        new OA\Property(property: "date", type: "integer"),
+                        new OA\Property(property: "balance", type: "number"),
+                        new OA\Property(property: "gender", type: "integer"),
+                        new OA\Property(property: "client_gender", type: "integer"),
+                        new OA\Property(property: "status", type: "integer"),
+                        new OA\Property(property: "search_radius", type: "integer"),
+                        new OA\Property(property: "work_city", type: "string"),
+                        new OA\Property(property: "work_street", type: "string"),
+                        new OA\Property(property: "work_house", type: "string"),
+                        new OA\Property(property: "work_lat", type: "number"),
+                        new OA\Property(property: "work_lon", type: "number"),
+                        new OA\Property(property: "live_city", type: "string"),
+                        new OA\Property(property: "live_street", type: "string"),
+                        new OA\Property(property: "live_house", type: "string"),
+                        new OA\Property(property: "live_lat", type: "number"),
+                        new OA\Property(property: "live_lon", type: "number"),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionProfile()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -151,36 +180,26 @@ class MasterController extends BaseController
         ];
     }
 
-    /**
-     * @SWG\Post(
-     *    path = "/master/update",
-     *    tags = {"Master"},
-     *    summary = "Изменить мастера",
-     *    security={{"access_token":{}}},
-     *    @SWG\Parameter(
-     *           name="body",
-     *           in="body",
-     *           required=true,
-     *           @SWG\Schema(ref = "#/definitions/Master")
-     *       ),
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Сохранен успешно",
-     *      @SWG\Schema(ref = "#/definitions/Master")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 403,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Post(
+        path: "/api/master/update",
+        summary: "Обновление профиля мастера",
+        tags: ["Master"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Обновленный профиль пользователя",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "email", type: "string", format: "email")
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionUpdate()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -193,37 +212,34 @@ class MasterController extends BaseController
         return $this->getProfile($this->user);
     }
 
-    /**
-     * @SWG\Post(
-     *    path = "/master/balance",
-     *    tags = {"Master"},
-     *    summary = "Пополнить баланса",
-     *    @SWG\Parameter(
-     *         name="body",
-     *         in="body",
-     *         required=true,
-     *         @SWG\Schema(
-     *             type="object",
-     *             @SWG\Property(
-     *                 property="price",
-     *                 type="number",
-     *                 description="Сумма пополения",
-     *             ),
-     *         )
-     *     ),
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Ссылка на оплату",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Post(
+        path: "/api/master/balance",
+        summary: "Пополнение баланса",
+        tags: ["Master"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "price", type: "number")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "URL для оплаты",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean"),
+                        new OA\Property(property: "url", type: "string", format: "uri")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса"),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionBalance()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;

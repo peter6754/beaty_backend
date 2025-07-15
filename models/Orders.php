@@ -5,16 +5,6 @@ namespace app\models;
 use Yii;
 
 /**
- * @SWG\Definition(required={"id", "user_id", "date", "price", "type"})
- *
- * @SWG\Property(property="id", type="integer")
- * @SWG\Property(property="user_id", type="integer")
- * @SWG\Property(property="user", type="object", ref="#/definitions/User")
- * @SWG\Property(property="date", type="integer", description="Unix timestamp")
- * @SWG\Property(property="price", type="number", format="float")
- * @SWG\Property(property="type", type="integer")
- * @SWG\Property(property="info", type="integer")
- *
  * This is the model class for table "orders".
  */
 class Orders extends \yii\db\ActiveRecord

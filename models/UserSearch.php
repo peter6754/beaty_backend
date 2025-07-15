@@ -6,18 +6,6 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\User;
 
-/**
- * @SWG\Definition()
- *
- * @SWG\Property(property="id", type="integer", description="User ID for search")
- * @SWG\Property(property="phone", type="string", description="User phone for search in format +7(999) 999-99-99")
- * @SWG\Property(property="email", type="string", description="User email for search")
- * @SWG\Property(property="password", type="string", description="User password for search")
- * @SWG\Property(property="name", type="string", description="User name for search")
- * @SWG\Property(property="token", type="string", description="User token for search")
- *
- * UserSearch represents the model behind the search form of `app\models\User`.
- */
 class UserSearch extends User
 {
     /**

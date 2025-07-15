@@ -4,26 +4,6 @@ namespace app\models;
 
 use Yii;
 
-/**
- * @SWG\Definition(required={"id"})
- *
- * @SWG\Property(property="id", type="integer")
- * @SWG\Property(property="caregory", type="object", ref="#/definitions/Coupon")
- * @SWG\Property(property="name", type="string")
- * @SWG\Property(property="phone", type="string")
- * @SWG\Property(property="time", type="string")
- * @SWG\Property(property="date", type="string")
- * @SWG\Property(property="city", type="string")
- * @SWG\Property(property="house", type="string")
- * @SWG\Property(property="apartment", type="string")
- * @SWG\Property(property="entrance", type="string")
- * @SWG\Property(property="floor", type="string")
- * @SWG\Property(property="intercom", type="string")
- * @SWG\Property(property="product", type="object", ref="#/definitions/Product")
- * @SWG\Property(property="comment", type="string")
- * @SWG\Property(property="status", type="integer")
- */
-
 class OrderApplication extends \yii\db\ActiveRecord
 {
     /**

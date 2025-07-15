@@ -4,15 +4,6 @@ namespace app\models;
 
 use Yii;
 
-/**
- * @SWG\Definition(required={"id", "name", "color"})
- *
- * @SWG\Property(property="id", type="integer")
- * @SWG\Property(property="active", type="boolean")
- * @SWG\Property(property="name", type="string")
- * @SWG\Property(property="color", type="string")
- * @SWG\Property(property="image", type="file")
- */
 class Category extends \yii\db\ActiveRecord
 {
     public $image;
@@ -27,8 +18,8 @@ class Category extends \yii\db\ActiveRecord
             'active',
             'name',
             'color',
-            'image_path', // Оставляем для обратной совместимости
-            'image_id'    // Новое поле для ссылки на Image
+            'image_path',
+            'image_id'   
         ];
     }
 

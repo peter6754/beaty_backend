@@ -14,43 +14,45 @@ use app\models\Affiliate;
 use app\models\AuthCode;
 use app\models\AffiliateHistory;
 use yii\helpers\Url;
-/**
- * Default controller for the `api` module
- */
+use OpenApi\Attributes as OA;
+
+#[OA\Info(title: "BeautyMS API", version: "1.0")]
+#[OA\SecurityScheme(
+    securityScheme: "bearerAuth",
+    type: "http",
+    scheme: "bearer",
+    bearerFormat: "JWT"
+)]
 class UserController extends BaseController
 {
-
-    /**
-     * @SWG\Post(
-     *    path = "/user/auth",
-     *    tags = {"User"},
-     *    summary = "Авторизация",
-     *    @SWG\Parameter(
-     *         name="body",
-     *         in="body",
-     *         required=true,
-     *         @SWG\Schema(
-     *             type="object",
-     *             @SWG\Property(
-     *                 property="phone",
-     *                 type="string",
-     *                 description="Телефон",
-     *             ),
-     *         )
-     *     ),
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Код авторизации пользователя отправлен",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\PathItem(path: "/api/user/auth")]
+    #[OA\Post(
+        path: "/api/user/auth",
+        summary: "Аутентификация по номеру телефона",
+        tags: ["User"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "phone", type: "string", example: "79991234567")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Код успешно отправлен",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Код успешно отправлен"),
+                        new OA\Property(property: "debugCode", type: "integer", example: 1234)
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса")
+        ]
+    )]
     public function actionAuth()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -77,47 +79,33 @@ class UserController extends BaseController
         return ["success" => true, "message" => "Код успешно отправлен", "debugCode" => $authCode->code];
     }
 
-    /**
-     * @SWG\Post(
-     *    path = "/user/code",
-     *    tags = {"User"},
-     *    summary = "Подтверждение пользователя",
-     *    @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          required=true,
-     *          @SWG\Schema(
-     *              type="object",
-     *               @SWG\Property(
-     *                   property="phone",
-     *                   type="string",
-     *                   description="Телефон",
-     *               ),
-     *               @SWG\Property(
-     *                   property="code",
-     *                   type="string",
-     *                   description="Код подверждения",
-     *               ),
-     *          )
-     *      ),
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Токен авторизации пользователя",
-     *      @SWG\Schema(ref = "#/definitions/Token")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 401,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\PathItem(path: "/api/user/code")]
+    #[OA\Post(
+        path: "/api/user/code",
+        summary: "Подтверждение кода и получение токена",
+        tags: ["User"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "phone", type: "string", example: "79991234567"),
+                    new OA\Property(property: "code", type: "string", example: "1234")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Успешная аутентификация",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "access_token", type: "string", example: "someRandomString")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса")
+        ]
+    )]
     public function actionCode()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -148,30 +136,28 @@ class UserController extends BaseController
         return ["access_token" => $user->token];
     }
 
-    /**
-     * @SWG\Get(
-     *    path = "/user/profile",
-     *    tags = {"User"},
-     *    summary = "Информация о пользователе",
-     *    security={{"access_token":{}}},
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Информация о пользователе",
-     *      @SWG\Schema(ref = "#/definitions/User")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 403,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\PathItem(path: "/api/user/profile")]
+    #[OA\Get(
+        path: "/api/user/profile",
+        summary: "Получение профиля пользователя",
+        tags: ["User"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Профиль пользователя",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "fcm_token", type: "string"),
+                        new OA\Property(property: "email", type: "string", format: "email")
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionProfile()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -184,53 +170,38 @@ class UserController extends BaseController
         return $this->getProfile($this->user);
     }
 
-    /**
-     * @SWG\Post(
-     *    path = "/user/update",
-     *    tags = {"User"},
-     *    summary = "Изменить пользователя",
-     *    security={{"access_token":{}}},
-     *    @SWG\Parameter(
-     *           name="body",
-     *           in="body",
-     *           required=true,
-     *           @SWG\Schema(
-     *               type="object",
-     *                 @SWG\Property(
-     *                     property="name",
-     *                     type="string",
-     *                     description="ФИО",
-     *                 ),
-     *                 @SWG\Property(
-     *                     property="email",
-     *                     type="string",
-     *                     description="Email",
-     *                 ),
-     *                 @SWG\Property(
-     *                     property="fcm_token",
-     *                     type="string",
-     *                     description="Токен Firebase",
-     *                 ),
-     *           )
-     *       ),
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Сохранен успешно",
-     *      @SWG\Schema(ref = "#/definitions/User")
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 403,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\PathItem(path: "/api/user/update")]
+    #[OA\Post(
+        path: "/api/user/update",
+        summary: "Обновление профиля пользователя",
+        tags: ["User"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "name", type: "string"),
+                    new OA\Property(property: "email", type: "string", format: "email"),
+                    new OA\Property(property: "fcm_token", type: "string")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Обновленный профиль пользователя",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "fcm_token", type: "string"),
+                        new OA\Property(property: "email", type: "string", format: "email")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса"),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionUpdate()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;

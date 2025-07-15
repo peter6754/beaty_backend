@@ -5,15 +5,6 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 
-/**
- * @SWG\Definition(required={"phone", "name", "email", "password", "password_repeat"})
- *
- * @SWG\Property(property="phone", type="string", description="User phone number in format +7(999) 999-99-99")
- * @SWG\Property(property="name", type="string", description="User name")
- * @SWG\Property(property="email", type="string", format="email", description="User email address")
- * @SWG\Property(property="password", type="string", description="User password")
- * @SWG\Property(property="password_repeat", type="string", description="Password confirmation")
- */
 class RegisterForm extends Model
 {
     public $phone;

@@ -8,36 +8,40 @@ use yii\web\Controller;
 use yii\web\HttpException;
 use app\models\Product;
 
+use OpenApi\Attributes as OA;
+
 class ProductController extends BaseController
 {
 
-    /**
-     * @SWG\Get(
-     *    path = "/product/list",
-     *    tags = {"Product"},
-     *    summary = "Список услуг",
-     *    security={{"access_token":{}}},
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Список услуг",
-     *      @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref="#/definitions/Product")
-     *      ),
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 401,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Get(
+        path: "/api/product/list",
+        summary: "Получение списка продуктов",
+        tags: ["Product"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Список продуктов",
+                content: new OA\JsonContent(
+                    type: "array",
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: "id", type: "integer"),
+                            new OA\Property(property: "name", type: "string"),
+                            new OA\Property(property: "category", type: "object", properties: [
+                                new OA\Property(property: "id", type: "integer"),
+                                new OA\Property(property: "name", type: "string"),
+                                new OA\Property(property: "color", type: "string"),
+                                new OA\Property(property: "image", type: "string", format: "uri")
+                            ]),
+                            new OA\Property(property: "price", type: "number")
+                        ]
+                    )
+                )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionList()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;

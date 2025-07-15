@@ -6,15 +6,6 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Category;
 
-/**
- * @SWG\Definition()
- *
- * @SWG\Property(property="id", type="integer", description="Category ID for search")
- * @SWG\Property(property="active", type="integer", description="Category active status for search")
- * @SWG\Property(property="name", type="string", description="Category name for search")
- *
- * CategorySearch represents the model behind the search form of `app\models\Category`.
- */
 class CategorySearch extends Category
 {
     /**

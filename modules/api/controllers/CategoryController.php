@@ -9,35 +9,34 @@ use yii\web\HttpException;
 use app\models\User;
 use app\models\Category;
 
+use OpenApi\Attributes as OA;
+
 class CategoryController extends BaseController
 {
-    /**
-     * @SWG\Get(
-     *    path = "/category/list",
-     *    tags = {"Category"},
-     *    summary = "Список категорий",
-     *    security={{"access_token":{}}},
-     *	  @SWG\Response(
-     *      response = 200,
-     *      description = "Список категорий",
-     *      @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref="#/definitions/Category")
-     *      ),
-     *    ),
-     *    @SWG\Response(
-     *      response = 400,
-     *      description = "Ошибка запроса",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *    @SWG\Response(
-     *      response = 401,
-     *      description = "Ошибка авторизации",
-     *      @SWG\Schema(ref = "#/definitions/Result")
-     *    ),
-     *)
-     * @throws HttpException
-     */
+    #[OA\Get(
+        path: "/api/category/list",
+        summary: "Получение списка категорий",
+        tags: ["Category"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Список категорий",
+                content: new OA\JsonContent(
+                    type: "array",
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: "id", type: "integer"),
+                            new OA\Property(property: "name", type: "string"),
+                            new OA\Property(property: "color", type: "string"),
+                            new OA\Property(property: "image", type: "string", format: "uri")
+                        ]
+                    )
+                )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
     public function actionList()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;

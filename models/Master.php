@@ -4,30 +4,6 @@ namespace app\models;
 
 use Yii;
 
-/**
- * @SWG\Definition(required={"id"})
- *
- * @SWG\Property(property="id", type="integer")
- * @SWG\Property(property="user", type="object", ref="#/definitions/User")
- * @SWG\Property(property="balance", type="number")
- * @SWG\Property(property="lastname", type="string")
- * @SWG\Property(property="firstname", type="string")
- * @SWG\Property(property="middlename", type="string")
- * @SWG\Property(property="gender", type="integer")
- * @SWG\Property(property="birthday", type="string")
- * @SWG\Property(property="work_city", type="string")
- * @SWG\Property(property="work_street", type="string")
- * @SWG\Property(property="work_house", type="string")
- * @SWG\Property(property="work_lat", type="number")
- * @SWG\Property(property="work_lon", type="number")
- * @SWG\Property(property="live_city", type="string")
- * @SWG\Property(property="live_street", type="string")
- * @SWG\Property(property="live_house", type="string")
- * @SWG\Property(property="live_lat", type="number")
- * @SWG\Property(property="live_lon", type="number")
- * @SWG\Property(property="search_radius", type="integer")
- * @SWG\Property(property="client_gender", type="integer")
- */
 class Master extends \yii\db\ActiveRecord
 {
     /**

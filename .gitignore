@@ -58,3 +58,4 @@ deploy.sh
 *-lock.json
 *.lock
 .env
+GEMINI.md
