@@ -12,7 +12,7 @@ class DefaultController extends \yii\web\Controller
         return [
             'doc' => [
                 'class' => 'light\swagger\SwaggerAction',
-                'restUrl' => Url::to(['/api/swagger.json'], true),
+                'restUrl' => Url::to(['/docs/swagger.json'], true),
             ],
             'api' => [
                 'class' => 'light\swagger\SwaggerApiAction',

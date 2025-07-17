@@ -97,6 +97,8 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'api/order/list/<id:\d+>' => 'api/order/list',
+                'api/order/coupon/<id:\d+>' => 'api/order/coupon',
                 'api/swagger' => 'api/swagger/default/doc',
                 'api/swagger.json' => 'api/swagger/default/api',
             ],
@@ -105,8 +107,8 @@ $config = [
     'controllerMap' => [
         'elfinder' => [
             'class' => 'mihaildev\elfinder\Controller',
-            'access' => ['@'], //глобальный доступ к фаил менеджеру @ - для авторизорованных , ? - для гостей , чтоб открыть всем ['@', '?']
-            'disabledCommands' => ['netmount'], //отключение ненужных команд https://github.com/Studio-42/elFinder/wiki/Client-configuration-options#commands
+            'access' => ['@'],
+            'disabledCommands' => ['netmount'],
             'roots' => [
                 [
                     'baseUrl' => '/files',

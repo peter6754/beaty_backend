@@ -25,6 +25,82 @@ use OpenApi\Attributes as OA;
 )]
 class UserController extends BaseController
 {
+
+    #[OA\PathItem(path: "/api/user/register")]
+    #[OA\Post(
+        path: "/api/user/register",
+        summary: "Регистрация нового пользователя",
+        tags: ["User"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "phone", type: "string", example: "79991234567"),
+                    new OA\Property(property: "name", type: "string", example: "Иван Иванов"),
+                    new OA\Property(property: "email", type: "string", format: "email", example: "user@example.com")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Код подтверждения отправлен",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Код подтверждения отправлен"),
+                        new OA\Property(property: "debugCode", type: "integer", example: 1234)
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса")
+        ]
+    )]
+    public function actionRegister()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $phone = Yii::$app->request->post("phone");
+        $name = trim(Yii::$app->request->post("name", ""));
+        $email = trim(Yii::$app->request->post("email", ""));
+
+        if (! $phone) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Номер телефона не указан"];
+        }
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+
+        // Форматируем телефон для валидации модели
+        $formattedPhone = User::maskPhone($cleanPhone);
+
+        // Проверяем, существует ли уже пользователь с таким телефоном
+        $existingUser = User::findOne(["phone" => $cleanPhone]);
+        if ($existingUser) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Пользователь с таким номером телефона уже существует"];
+        }
+
+        // Создаем нового пользователя
+        $user = new User([
+            "phone" => $formattedPhone,
+            "name" => $name,
+            "email" => $email
+        ]);
+
+        if (! $user->save()) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => $this->getError($user)];
+        }
+
+        // Генерируем и отправляем код подтверждения, пока нет отправки SMS
+        $code = rand(1000, 9999);
+        $authCode = new AuthCode(["user_id" => $user->id, "code" => $code, "date" => time()]);
+        $authCode->save();
+
+        return ["success" => true, "message" => "Код подтверждения отправлен", "debugCode" => $authCode->code];
+    }
+
     #[OA\PathItem(path: "/api/user/auth")]
     #[OA\Post(
         path: "/api/user/auth",
@@ -62,9 +138,11 @@ class UserController extends BaseController
             return ["success" => false, "message" => "Номер телефона не указан"];
         }
 
-        $user = User::findOne(["phone" => preg_replace('/[^0-9]/', '', Yii::$app->request->post("phone"))]);
+        $cleanPhone = preg_replace('/[^0-9]/', '', Yii::$app->request->post("phone"));
+        $user = User::findOne(["phone" => $cleanPhone]);
         if (! $user) {
-            $user = new User(["phone" => Yii::$app->request->post("phone")]);
+            $formattedPhone = User::maskPhone($cleanPhone);
+            $user = new User(["phone" => $formattedPhone]);
             if (! $user->save()) {
                 Yii::$app->response->statusCode = 400;
                 return ["success" => false, "message" => $this->getError($user)];
@@ -115,7 +193,8 @@ class UserController extends BaseController
             return ["success" => false, "message" => "Номер телефона не указан"];
         }
 
-        $user = User::findOne(["phone" => preg_replace('/[^0-9]/', '', Yii::$app->request->post("phone"))]);
+        $cleanPhone = preg_replace('/[^0-9]/', '', Yii::$app->request->post("phone"));
+        $user = User::findOne(["phone" => $cleanPhone]);
         if (! $user) {
             Yii::$app->response->statusCode = 400;
             return ["success" => false, "message" => "Пользователь не найден"];
@@ -128,7 +207,6 @@ class UserController extends BaseController
         }
 
         $user->token = Yii::$app->security->generateRandomString();
-        ;
         $user->save();
 
         $code->delete();
