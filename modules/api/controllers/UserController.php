@@ -154,6 +154,8 @@ class UserController extends BaseController
         $authCode = new AuthCode(["user_id" => $user->id, "code" => $code, "date" => time()]);
         $authCode->save();
 
+        Yii::$app->sms->send($cleanPhone, 'Your auth code: ' . $code);
+
         return ["success" => true, "message" => "Код успешно отправлен", "debugCode" => $authCode->code];
     }
 

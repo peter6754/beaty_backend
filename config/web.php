@@ -60,6 +60,9 @@ $config = [
         'global' => [
             'class' => 'app\components\GlobalComponent'
         ],
+        'sms' => [
+            'class' => 'app\components\Sms'
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
