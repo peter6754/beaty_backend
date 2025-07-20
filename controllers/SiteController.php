@@ -187,12 +187,6 @@ class SiteController extends Controller
                 $master->setAttributes($masterForm->attributes);
 
                 if ($master->save()) {
-                    // В режиме разработки пропускаем оплату
-                    if (YII_ENV_DEV) {
-                        Yii::$app->session->setFlash('success', 'Регистрация мастера завершена (тестовый режим без оплаты)');
-                        return $this->redirect(['site/index']);
-                    }
-
                     // Создание ссылки на оплату через Robokassa для регистрации мастера
                     $mrh_login = Yii::$app->params['robokassa_login'];
                     $mrh_pass1 = Yii::$app->params['robokassa_pass1'];
