@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Июл 20 2025 г., 01:31
+-- Время создания: Июл 20 2025 г., 05:40
 -- Версия сервера: 8.0.42-0ubuntu0.24.04.1
 -- Версия PHP: 8.3.23
 
@@ -166,7 +166,7 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `active`, `name`, `color`, `image_path`, `image_id`) VALUES
-(1, 1, 'Макияж', '#a9d0ed', '/images/storage/image-by-item-and.png', 16),
+(1, 1, 'Макияж', '#a9d0ed', '/images/storage/image-by-item-and.png', 32),
 (2, 1, 'Ресницы', '#bdb7eb', '/images/storage/image-by-item-and-aliasfff.png', 24),
 (3, 1, 'Ногти', '#e6b6ba', '/images/storage/image-by-item-and-alias.png', 18),
 (4, 1, 'Волосы', '#ffc897', '/images/storage/image-by-item-and-aliasg.png', 20),
@@ -197,7 +197,7 @@ CREATE TABLE `coupon` (
 --
 
 INSERT INTO `coupon` (`id`, `category_id`, `name`, `description`, `amount`, `price`, `image_path`, `image_id`) VALUES
-(3, 1, 'Купон на услугу', 'Дневной макияж', 500.00, 99.00, 'images/coupons/image-by-item-and.png', NULL),
+(3, 1, 'Купон на услугу', 'Дневной макияж', 500.00, 99.00, '/images/storage/5102-101-krasnaya-roza-aper-klass-01_1.jpg', 35),
 (4, 1, 'Купон на услугу', 'Вечерний макияж', 500.00, 99.00, NULL, NULL),
 (5, 1, 'Купон на услугу', 'Макияж на фотосессию', 500.00, 99.00, NULL, NULL),
 (6, 1, 'Купон на услугу', 'Макияж на выпускной', 500.00, 99.00, NULL, NULL),
@@ -207,21 +207,6 @@ INSERT INTO `coupon` (`id`, `category_id`, `name`, `description`, `amount`, `pri
 (10, 6, 'Купон на услугу', 'Окрашивание + оформление бровей', 300.00, 99.00, NULL, NULL),
 (11, 2, 'Купон на услугу', 'Наращивание ресниц: Классика', 500.00, 99.00, NULL, NULL),
 (12, 2, 'Купон на услугу', 'Наращивания ресниц: 2D', 500.00, 99.00, NULL, NULL),
-(13, 2, 'Купон на услугу', 'Наращивания ресниц: 3D', 500.00, 99.00, NULL, NULL),
-(14, 2, 'Купон на услугу', 'Наращивания ресниц: 4D', 500.00, 99.00, NULL, NULL),
-(15, 4, 'Купон на услугу', 'Укладка локоны', 500.00, 99.00, NULL, NULL),
-(16, 4, 'Купон на услугу', 'Укладка на брашинг', 500.00, 99.00, NULL, NULL),
-(17, 4, 'Купон на услугу', 'Окрашивание корней и тонирование волос (до плеч)', 500.00, 99.00, NULL, NULL),
-(18, 4, 'Купон на услугу', 'Окрашивание корней и тонирование волос (до лопаток)', 500.00, 99.00, NULL, NULL),
-(19, 4, 'Купон на услугу', 'Окрашивание корней и тонирование волос (ниже лопаток)', 500.00, 99.00, NULL, NULL),
-(20, 4, 'Купон на услугу', 'Окрашивание в сложных техниках (AirTouch, мелирование) длина волос до плеч', 500.00, 99.00, NULL, NULL),
-(21, 4, 'Купон на услугу', 'Окрашивание в сложных техниках (AirTouch, мелирование) длина волос до лопаток', 500.00, 99.00, NULL, NULL),
-(22, 4, 'Купон на услугу', 'Окрашивание в сложных техниках (AirTouch, мелирование) длина волос ниже лопаток', 500.00, 99.00, NULL, NULL),
-(23, 4, 'Купон на услугу', 'Тонирование по длине (волосы до плеч)', 500.00, 99.00, NULL, NULL),
-(24, 4, 'Купон на услугу', 'Тонирование по длине (волосы до лопаток)', 500.00, 99.00, NULL, NULL),
-(25, 4, 'Купон на услугу', 'Тонирование по длине (волосы ниже лопаток)', 500.00, 99.00, NULL, NULL),
-(26, 4, 'Купон на услугу', '2в1: стрижка и укладка', 1000.00, 199.00, NULL, NULL),
-(27, 3, 'Купон на услугу', 'Маникюр + покрытие гель лак (снятие в подарок)', 300.00, 99.00, NULL, NULL),
 (28, 7, 'Купон на услугу', 'Перманентный макияж бровей', 1000.00, 199.00, NULL, NULL),
 (29, 8, 'Купон на услугу', '3в1: подмышечные впадины + глубокое бикини + голени или бедра (сахар)', 500.00, 99.00, NULL, NULL),
 (30, 5, 'Купон на услугу', 'Спортивный массаж (60 мин)', 500.00, 99.00, NULL, NULL),
@@ -279,14 +264,17 @@ INSERT INTO `image` (`id`, `filePath`, `itemId`, `isMain`, `modelName`, `urlAlia
 (8, 'Categories/Category8/cb0158.png', 8, NULL, 'Category', 'e877090f10-1', '', 0),
 (10, 'Coupons/Coupon1/58567c.png', 1, NULL, 'Coupon', '5fb969c6f4-1', '', 0),
 (12, 'Coupons/Coupon2/00d8f4.png', 2, NULL, 'Coupon', '6b8ddefe48-1', '', 0),
-(16, '/images/storage/image-by-item-and.png', 1, 1, 'Category', 'image-by-item-and.png', 'image-by-item-and.png', 0),
 (18, '/images/storage/image-by-item-and-alias.png', 3, 1, 'Category', 'image-by-item-and-alias.png', 'image-by-item-and-alias.png', 0),
 (20, '/images/storage/image-by-item-and-aliasg.png', 4, 1, 'Category', 'image-by-item-and-aliasg.png', 'image-by-item-and-aliasg.png', 0),
 (21, '/images/storage/image-by-item-anddd.png', 5, 1, 'Category', 'image-by-item-anddd.png', 'image-by-item-anddd.png', 0),
 (24, '/images/storage/image-by-item-and-aliasfff.png', 2, 1, 'Category', 'image-by-item-and-aliasfff.png', 'image-by-item-and-aliasfff.png', 0),
 (26, '/images/storage/image-fby-item-and-alias.png', 7, 1, 'Category', 'image-fby-item-and-alias.png', 'image-fby-item-and-alias.png', 0),
 (27, '/images/storage/imeeage-by-item-and-aflias.png', 8, 1, 'Category', 'imeeage-by-item-and-aflias.png', 'imeeage-by-item-and-aflias.png', 0),
-(28, '/images/storage/image-by-item-anddd_1.png', 6, 1, 'Category', 'image-by-item-anddd_1.png', 'image-by-item-anddd_1.png', 0);
+(28, '/images/storage/image-by-item-anddd_1.png', 6, 1, 'Category', 'image-by-item-anddd_1.png', 'image-by-item-anddd_1.png', 0),
+(32, '/images/storage/image-by-item-and.png', 1, 1, 'Category', 'image-by-item-and.png', 'image-by-item-and.png', 0),
+(33, '/images/storage/image-by-item-and_1.png', 3, 1, 'Coupon', 'image-by-item-and_1.png', 'image-by-item-and_1.png', 0),
+(34, '/images/storage/5102-101-krasnaya-roza-aper-klass-01.jpg', 3, 1, 'Coupon', '5102-101-krasnaya-roza-aper-klass-01.jpg', '5102-101-krasnaya-roza-aper-klass-01.jpg', 0),
+(35, '/images/storage/5102-101-krasnaya-roza-aper-klass-01_1.jpg', 3, 1, 'Coupon', '5102-101-krasnaya-roza-aper-klass-01_1.jpg', '5102-101-krasnaya-roza-aper-klass-01_1.jpg', 0);
 
 -- --------------------------------------------------------
 
@@ -396,7 +384,11 @@ INSERT INTO `orders` (`id`, `user_id`, `price`, `date`, `info`, `type`) VALUES
 (28, 1, 99.00, 1752969185, 55, 1),
 (29, 1, 99.00, 1752969603, 56, 1),
 (30, 1, 99.00, 1752969863, 57, 1),
-(31, 1, 99.00, 1752969983, 58, 1);
+(31, 1, 99.00, 1752969983, 58, 1),
+(32, 2, 99.00, 1752987478, 92, 1),
+(33, 3, 99.00, 1752987568, 93, 1),
+(34, 3, 99.00, 1752987626, 94, 1),
+(35, 3, 99.00, 1752988134, 95, 1);
 
 -- --------------------------------------------------------
 
@@ -435,7 +427,11 @@ CREATE TABLE `order_application` (
 INSERT INTO `order_application` (`id`, `user_id`, `name`, `phone`, `date`, `city`, `street`, `house`, `apartment`, `entrance`, `floor`, `intercom`, `time`, `price`, `order_coupon_id`, `lat`, `lon`, `product_id`, `comment`, `master_id`, `status`) VALUES
 (2, NULL, 'ильяс', 79991890133, 1720040400, 'г Ижевск ', 'ул Пушкинская', 'д 304', '3', '3', '4', '2', 15, 0.00, NULL, 56.8501, 53.2126, NULL, '', NULL, 0),
 (3, NULL, 'ильяс', 78999189013, 1720040400, 'г Ижевск', 'ул Кавказская', 'д 3 ', '3', '13', '4', '4', 14, 99.00, NULL, 56.8031, 53.1467, NULL, '', NULL, 0),
-(4, NULL, 'werwe', 78423423434, 1752613200, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '3', '1', 1, 99.00, 13, 0, 0, 3, '', NULL, 0);
+(4, NULL, 'werwe', 78423423434, 1752613200, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '3', '1', 1, 99.00, 13, 0, 0, 3, '', NULL, 0),
+(5, 2, 'werwe', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '2', '3', '5', 10, 99.00, 92, 0, 0, 3, '', NULL, 0),
+(6, 3, 'рпар', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '3', '1', 9, 99.00, 93, 0, 0, 3, '', NULL, 0),
+(7, 3, 'рпар', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '2', '5', 10, 99.00, 94, 0, 0, 3, '', NULL, 0),
+(8, 3, 'рпар', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '3', '1', 10, 99.00, 95, 0, 0, 3, '', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -489,7 +485,7 @@ INSERT INTO `order_coupon` (`id`, `user_id`, `coupon_id`, `price`, `date`, `orde
 (29, NULL, 10, 99.00, 1752938001, NULL, 0),
 (30, 1, 10, 99.00, 1752939620, NULL, 0),
 (31, 1, 5, 99.00, 1752940066, NULL, 0),
-(32, 1, 13, 99.00, 1752940672, NULL, 0),
+(32, 1, NULL, 99.00, 1752940672, NULL, 0),
 (33, 1, 5, 99.00, 1752944931, NULL, 0),
 (34, 1, 4, 99.00, 1752945017, NULL, 0),
 (35, 1, 3, 99.00, 1752945484, NULL, 0),
@@ -499,8 +495,8 @@ INSERT INTO `order_coupon` (`id`, `user_id`, `coupon_id`, `price`, `date`, `orde
 (39, 1, 4, 99.00, 1752945906, NULL, 0),
 (40, 1, 4, 99.00, 1752947743, NULL, 0),
 (41, 1, 4, 99.00, 1752947920, 'test_1752947920', 0),
-(42, 1, 14, 99.00, 1752965087, NULL, 0),
-(43, 1, 22, 99.00, 1752965776, NULL, 0),
+(42, 1, NULL, 99.00, 1752965087, NULL, 0),
+(43, 1, NULL, 99.00, 1752965776, NULL, 0),
 (44, 1, 4, 99.00, 1752966146, NULL, 0),
 (45, 1, 4, 99.00, 1752966177, NULL, 0),
 (46, 1, 8, 99.00, 1752967312, NULL, 0),
@@ -524,15 +520,15 @@ INSERT INTO `order_coupon` (`id`, `user_id`, `coupon_id`, `price`, `date`, `orde
 (64, 1, 9, 1000.00, 1752971102, '64', 0),
 (65, 1, 12, 99.00, 1752971150, '65', 0),
 (66, 1, 11, 99.00, 1752971171, '66', 0),
-(67, 1, 17, 99.00, 1752971196, '67', 0),
-(68, 1, 20, 99.00, 1752971316, '68', 0),
-(69, 1, 24, 99.00, 1752971385, '69', 0),
-(70, 1, 20, 99.00, 1752971472, '70', 0),
-(71, 1, 22, 99.00, 1752971488, '71', 0),
-(72, 1, 25, 99.00, 1752971622, '72', 0),
+(67, 1, NULL, 99.00, 1752971196, '67', 0),
+(68, 1, NULL, 99.00, 1752971316, '68', 0),
+(69, 1, NULL, 99.00, 1752971385, '69', 0),
+(70, 1, NULL, 99.00, 1752971472, '70', 0),
+(71, 1, NULL, 99.00, 1752971488, '71', 0),
+(72, 1, NULL, 99.00, 1752971622, '72', 0),
 (73, 1, 29, 99.00, 1752971795, '73', 0),
 (74, 1, 4, 99.00, 1752971932, '74', 0),
-(75, 1, 24, 99.00, 1752971956, '75', 0),
+(75, 1, NULL, 99.00, 1752971956, '75', 0),
 (76, 1, 4, 99.00, 1752971973, '76', 0),
 (77, 1, 4, 99.00, 1752972084, '77', 0),
 (78, 1, 4, 99.00, 1752972178, '78', 0),
@@ -547,7 +543,12 @@ INSERT INTO `order_coupon` (`id`, `user_id`, `coupon_id`, `price`, `date`, `orde
 (87, 1, 4, 99.00, 1752972954, '87', 0),
 (88, 1, 4, 99.00, 1752972985, '88', 0),
 (89, 1, 4, 99.00, 1752973060, '89', 0),
-(90, 1, 3, 99.00, 1752973630, '90', 1);
+(90, 1, 3, 99.00, 1752973630, '90', 1),
+(91, 2, 4, 99.00, 1752987431, '91', 0),
+(92, 2, 3, 99.00, 1752987478, '32', 0),
+(93, 3, 3, 99.00, 1752987568, '33', 0),
+(94, 3, 3, 99.00, 1752987626, '34', 0),
+(95, 3, 3, 99.00, 1752988134, '35', 0);
 
 -- --------------------------------------------------------
 
@@ -639,7 +640,8 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`id`, `phone`, `name`, `email`, `fcm_token`, `token`, `password`) VALUES
 (1, 73433232323, 'Peter', 'peter@mail.com', NULL, 'IZo72HuTku_NA7aUjzoQHpXjTPXnxIO0', '$2y$13$kubKnIiF3ZVWAFj2eW5Ch.akKE4coAEZ9MFpFPmO23aT9izBeEx.a'),
-(2, 78423423411, 'fdsfs', 'peterrr@mail.com', NULL, '4tK2_rzGUqN2YmRxxz5wFGgHnEfUBIY0', '$2y$13$sHTnU62P.2JMIdY/y3ml5OmLwvq14Ya1EYLi0pQWBp3pO1jgtkEUe');
+(2, 78423423411, 'fdsfs', 'peterrr@mail.com', NULL, '4tK2_rzGUqN2YmRxxz5wFGgHnEfUBIY0', '$2y$13$sHTnU62P.2JMIdY/y3ml5OmLwvq14Ya1EYLi0pQWBp3pO1jgtkEUe'),
+(3, 78423423434, 'рпар', NULL, NULL, 'UL4aTE0FxzbotD_3D4Y7GXcqabKHO0Rj', '$2y$13$Dag7FEpBU5QDi7IqhF2fFegh5O7iuOjhoBLHRQtc6RG3kYHMfNoou');
 
 --
 -- Индексы сохранённых таблиц
@@ -657,7 +659,9 @@ ALTER TABLE `auth_assignment`
 --
 ALTER TABLE `auth_code`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `idx_auth_code_code` (`code`),
+  ADD KEY `idx_auth_code_date` (`date`);
 
 --
 -- Индексы таблицы `auth_item`
@@ -684,14 +688,17 @@ ALTER TABLE `auth_rule`
 -- Индексы таблицы `category`
 --
 ALTER TABLE `category`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_category_image_id` (`image_id`),
+  ADD KEY `idx_category_active` (`active`);
 
 --
 -- Индексы таблицы `coupon`
 --
 ALTER TABLE `coupon`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `category_id` (`category_id`);
+  ADD KEY `category_id` (`category_id`),
+  ADD KEY `idx_coupon_image_id` (`image_id`);
 
 --
 -- Индексы таблицы `files`
@@ -703,14 +710,18 @@ ALTER TABLE `files`
 -- Индексы таблицы `image`
 --
 ALTER TABLE `image`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_image_model_item` (`modelName`,`itemId`),
+  ADD KEY `idx_image_is_main` (`isMain`);
 
 --
 -- Индексы таблицы `master`
 --
 ALTER TABLE `master`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `idx_master_status` (`status`),
+  ADD KEY `idx_master_order_id` (`order_id`);
 
 --
 -- Индексы таблицы `migration`
@@ -733,7 +744,9 @@ ALTER TABLE `order_application`
   ADD KEY `user_id` (`user_id`),
   ADD KEY `master_id` (`master_id`),
   ADD KEY `order_coupon_id` (`order_coupon_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `idx_order_application_status` (`status`),
+  ADD KEY `idx_order_application_date` (`date`);
 
 --
 -- Индексы таблицы `order_coupon`
@@ -741,7 +754,8 @@ ALTER TABLE `order_application`
 ALTER TABLE `order_coupon`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `coupon_id` (`coupon_id`);
+  ADD KEY `coupon_id` (`coupon_id`),
+  ADD KEY `idx_order_coupon_status` (`status`);
 
 --
 -- Индексы таблицы `product`
@@ -754,7 +768,10 @@ ALTER TABLE `product`
 -- Индексы таблицы `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_user_phone` (`phone`),
+  ADD KEY `idx_user_email` (`email`),
+  ADD KEY `idx_user_token` (`token`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
@@ -788,7 +805,7 @@ ALTER TABLE `files`
 -- AUTO_INCREMENT для таблицы `image`
 --
 ALTER TABLE `image`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT для таблицы `master`
@@ -800,19 +817,19 @@ ALTER TABLE `master`
 -- AUTO_INCREMENT для таблицы `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT для таблицы `order_application`
 --
 ALTER TABLE `order_application`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT для таблицы `order_coupon`
 --
 ALTER TABLE `order_coupon`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT для таблицы `product`
@@ -824,7 +841,7 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT для таблицы `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
@@ -856,10 +873,17 @@ ALTER TABLE `auth_item_child`
   ADD CONSTRAINT `auth_item_child_ibfk_2` FOREIGN KEY (`child`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Ограничения внешнего ключа таблицы `category`
+--
+ALTER TABLE `category`
+  ADD CONSTRAINT `fk_category_image_id` FOREIGN KEY (`image_id`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
 -- Ограничения внешнего ключа таблицы `coupon`
 --
 ALTER TABLE `coupon`
-  ADD CONSTRAINT `coupon_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `coupon_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_coupon_image_id` FOREIGN KEY (`image_id`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `master`
