@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Июл 20 2025 г., 05:40
+-- Время создания: Июл 20 2025 г., 14:50
 -- Версия сервера: 8.0.42-0ubuntu0.24.04.1
 -- Версия PHP: 8.3.23
 
@@ -166,14 +166,14 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `active`, `name`, `color`, `image_path`, `image_id`) VALUES
-(1, 1, 'Макияж', '#a9d0ed', '/images/storage/image-by-item-and.png', 32),
-(2, 1, 'Ресницы', '#bdb7eb', '/images/storage/image-by-item-and-aliasfff.png', 24),
-(3, 1, 'Ногти', '#e6b6ba', '/images/storage/image-by-item-and-alias.png', 18),
-(4, 1, 'Волосы', '#ffc897', '/images/storage/image-by-item-and-aliasg.png', 20),
-(5, 1, 'Массаж', '#dfb0fd', '/images/storage/image-by-item-anddd.png', 21),
-(6, 1, 'Брови', '#aad09f', '/images/storage/image-by-item-anddd_1.png', 28),
-(7, 1, 'Перманент', '#97aecf', '/images/storage/image-fby-item-and-alias.png', 26),
-(8, 1, 'Эпиляция', '#fe8ccd', '/images/storage/imeeage-by-item-and-aflias.png', 27);
+(1, 1, 'Макияж', '#a9d0ed', '/images/storage/image-by-item-and-alias-1.png', 38),
+(2, 1, 'Ресницы', '#bdb7eb', '/images/storage/image-by-item-and-alias-2.png', 39),
+(3, 1, 'Ногти', '#e6b6ba', '/images/storage/image-by-item-and-alias-3.png', 40),
+(4, 1, 'Волосы', '#ffc897', '/images/storage/image-by-item-and-alias-4.png', 41),
+(5, 1, 'Массаж', '#dfb0fd', '/images/storage/image-by-item-and-alias-5.png', 42),
+(6, 1, 'Брови', '#aad09f', '/images/storage/image-by-item-and-alias-6.png', 43),
+(7, 1, 'Перманент', '#97aecf', '/images/storage/image-by-item-and-alias-7.png', 44),
+(8, 1, 'Эпиляция', '#fe8ccd', '/images/storage/image-by-item-and-alias-8.png', 45);
 
 -- --------------------------------------------------------
 
@@ -197,26 +197,14 @@ CREATE TABLE `coupon` (
 --
 
 INSERT INTO `coupon` (`id`, `category_id`, `name`, `description`, `amount`, `price`, `image_path`, `image_id`) VALUES
-(3, 1, 'Купон на услугу', 'Дневной макияж', 500.00, 99.00, '/images/storage/5102-101-krasnaya-roza-aper-klass-01_1.jpg', 35),
-(4, 1, 'Купон на услугу', 'Вечерний макияж', 500.00, 99.00, NULL, NULL),
-(5, 1, 'Купон на услугу', 'Макияж на фотосессию', 500.00, 99.00, NULL, NULL),
+(3, 1, 'Купон на услугу', 'Дневной макияж', 500.00, 99.00, '/images/storage/5102-101-krasnaya-roza-aper-klass-01.jpg', 46),
+(4, 1, 'Купон на услугу', 'Вечерний макияж', 500.00, 99.00, '/images/storage/5102-101-krasnaya-roza-aper-klass-01_1.jpg', 47),
+(5, 1, 'Купон на услугу', 'Макияж на фотосессию', 500.00, 99.00, '/images/storage/5102-101-krasnaya-roza-aper-klass-01_2.jpg', 48),
 (6, 1, 'Купон на услугу', 'Макияж на выпускной', 500.00, 99.00, NULL, NULL),
 (7, 1, 'Купон на услугу', 'Пробный макияж', 500.00, 99.00, NULL, NULL),
 (8, 1, 'Купон на услугу', 'Свадебный макияж', 500.00, 99.00, NULL, NULL),
 (9, 1, 'Купон на услугу', '2в1: пробный макияж и свадебный макияж', 199.00, 1000.00, NULL, NULL),
-(10, 6, 'Купон на услугу', 'Окрашивание + оформление бровей', 300.00, 99.00, NULL, NULL),
-(11, 2, 'Купон на услугу', 'Наращивание ресниц: Классика', 500.00, 99.00, NULL, NULL),
-(12, 2, 'Купон на услугу', 'Наращивания ресниц: 2D', 500.00, 99.00, NULL, NULL),
-(28, 7, 'Купон на услугу', 'Перманентный макияж бровей', 1000.00, 199.00, NULL, NULL),
-(29, 8, 'Купон на услугу', '3в1: подмышечные впадины + глубокое бикини + голени или бедра (сахар)', 500.00, 99.00, NULL, NULL),
-(30, 5, 'Купон на услугу', 'Спортивный массаж (60 мин)', 500.00, 99.00, NULL, NULL),
-(31, 5, 'Купон на услугу', 'Классический массаж (60 мин)', 500.00, 99.00, NULL, NULL),
-(32, 5, 'Купон на услугу', 'Лимфодренажный (60 мин)', 500.00, 99.00, NULL, NULL),
-(33, 5, 'Купон на услугу', 'Антицеллюлитный (60 мин)', 500.00, 99.00, NULL, NULL),
-(34, 5, 'Купон на услугу', 'Массаж спины, шейно – воротниковой зоны (30 мин)', 500.00, 99.00, NULL, NULL),
-(35, 5, 'Купон на услугу', 'Массаж лица «Миофасциальный» (60 мин)', 500.00, 99.00, NULL, NULL),
-(36, 5, 'Купон на услугу', 'Классический массаж лица (60 мин)', 500.00, 99.00, NULL, NULL),
-(37, 5, 'Купон на услугу', 'Скульптурно – буккальный массаж (60 мин)', 500.00, 99.00, NULL, NULL);
+(10, 6, 'Купон на услугу', 'Окрашивание + оформление бровей', 300.00, 99.00, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -264,17 +252,19 @@ INSERT INTO `image` (`id`, `filePath`, `itemId`, `isMain`, `modelName`, `urlAlia
 (8, 'Categories/Category8/cb0158.png', 8, NULL, 'Category', 'e877090f10-1', '', 0),
 (10, 'Coupons/Coupon1/58567c.png', 1, NULL, 'Coupon', '5fb969c6f4-1', '', 0),
 (12, 'Coupons/Coupon2/00d8f4.png', 2, NULL, 'Coupon', '6b8ddefe48-1', '', 0),
-(18, '/images/storage/image-by-item-and-alias.png', 3, 1, 'Category', 'image-by-item-and-alias.png', 'image-by-item-and-alias.png', 0),
-(20, '/images/storage/image-by-item-and-aliasg.png', 4, 1, 'Category', 'image-by-item-and-aliasg.png', 'image-by-item-and-aliasg.png', 0),
-(21, '/images/storage/image-by-item-anddd.png', 5, 1, 'Category', 'image-by-item-anddd.png', 'image-by-item-anddd.png', 0),
-(24, '/images/storage/image-by-item-and-aliasfff.png', 2, 1, 'Category', 'image-by-item-and-aliasfff.png', 'image-by-item-and-aliasfff.png', 0),
-(26, '/images/storage/image-fby-item-and-alias.png', 7, 1, 'Category', 'image-fby-item-and-alias.png', 'image-fby-item-and-alias.png', 0),
-(27, '/images/storage/imeeage-by-item-and-aflias.png', 8, 1, 'Category', 'imeeage-by-item-and-aflias.png', 'imeeage-by-item-and-aflias.png', 0),
-(28, '/images/storage/image-by-item-anddd_1.png', 6, 1, 'Category', 'image-by-item-anddd_1.png', 'image-by-item-anddd_1.png', 0),
-(32, '/images/storage/image-by-item-and.png', 1, 1, 'Category', 'image-by-item-and.png', 'image-by-item-and.png', 0),
 (33, '/images/storage/image-by-item-and_1.png', 3, 1, 'Coupon', 'image-by-item-and_1.png', 'image-by-item-and_1.png', 0),
 (34, '/images/storage/5102-101-krasnaya-roza-aper-klass-01.jpg', 3, 1, 'Coupon', '5102-101-krasnaya-roza-aper-klass-01.jpg', '5102-101-krasnaya-roza-aper-klass-01.jpg', 0),
-(35, '/images/storage/5102-101-krasnaya-roza-aper-klass-01_1.jpg', 3, 1, 'Coupon', '5102-101-krasnaya-roza-aper-klass-01_1.jpg', '5102-101-krasnaya-roza-aper-klass-01_1.jpg', 0);
+(38, '/images/storage/image-by-item-and-alias-1.png', 1, 1, 'Category', 'image-by-item-and-alias-1.png', 'image-by-item-and-alias-1.png', 0),
+(39, '/images/storage/image-by-item-and-alias-2.png', 2, 1, 'Category', 'image-by-item-and-alias-2.png', 'image-by-item-and-alias-2.png', 0),
+(40, '/images/storage/image-by-item-and-alias-3.png', 3, 1, 'Category', 'image-by-item-and-alias-3.png', 'image-by-item-and-alias-3.png', 0),
+(41, '/images/storage/image-by-item-and-alias-4.png', 4, 1, 'Category', 'image-by-item-and-alias-4.png', 'image-by-item-and-alias-4.png', 0),
+(42, '/images/storage/image-by-item-and-alias-5.png', 5, 1, 'Category', 'image-by-item-and-alias-5.png', 'image-by-item-and-alias-5.png', 0),
+(43, '/images/storage/image-by-item-and-alias-6.png', 6, 1, 'Category', 'image-by-item-and-alias-6.png', 'image-by-item-and-alias-6.png', 0),
+(44, '/images/storage/image-by-item-and-alias-7.png', 7, 1, 'Category', 'image-by-item-and-alias-7.png', 'image-by-item-and-alias-7.png', 0),
+(45, '/images/storage/image-by-item-and-alias-8.png', 8, 1, 'Category', 'image-by-item-and-alias-8.png', 'image-by-item-and-alias-8.png', 0),
+(46, '/images/storage/5102-101-krasnaya-roza-aper-klass-01.jpg', 3, 1, 'Coupon', '5102-101-krasnaya-roza-aper-klass-01.jpg', '5102-101-krasnaya-roza-aper-klass-01.jpg', 0),
+(47, '/images/storage/5102-101-krasnaya-roza-aper-klass-01_1.jpg', 4, 1, 'Coupon', '5102-101-krasnaya-roza-aper-klass-01_1.jpg', '5102-101-krasnaya-roza-aper-klass-01_1.jpg', 0),
+(48, '/images/storage/5102-101-krasnaya-roza-aper-klass-01_2.jpg', 5, 1, 'Coupon', '5102-101-krasnaya-roza-aper-klass-01_2.jpg', '5102-101-krasnaya-roza-aper-klass-01_2.jpg', 0);
 
 -- --------------------------------------------------------
 
@@ -518,15 +508,15 @@ INSERT INTO `order_coupon` (`id`, `user_id`, `coupon_id`, `price`, `date`, `orde
 (62, 1, 4, 99.00, 1752970786, NULL, 0),
 (63, 1, 4, 99.00, 1752971009, '63', 0),
 (64, 1, 9, 1000.00, 1752971102, '64', 0),
-(65, 1, 12, 99.00, 1752971150, '65', 0),
-(66, 1, 11, 99.00, 1752971171, '66', 0),
+(65, 1, NULL, 99.00, 1752971150, '65', 0),
+(66, 1, NULL, 99.00, 1752971171, '66', 0),
 (67, 1, NULL, 99.00, 1752971196, '67', 0),
 (68, 1, NULL, 99.00, 1752971316, '68', 0),
 (69, 1, NULL, 99.00, 1752971385, '69', 0),
 (70, 1, NULL, 99.00, 1752971472, '70', 0),
 (71, 1, NULL, 99.00, 1752971488, '71', 0),
 (72, 1, NULL, 99.00, 1752971622, '72', 0),
-(73, 1, 29, 99.00, 1752971795, '73', 0),
+(73, 1, NULL, 99.00, 1752971795, '73', 0),
 (74, 1, 4, 99.00, 1752971932, '74', 0),
 (75, 1, NULL, 99.00, 1752971956, '75', 0),
 (76, 1, 4, 99.00, 1752971973, '76', 0),
@@ -805,7 +795,7 @@ ALTER TABLE `files`
 -- AUTO_INCREMENT для таблицы `image`
 --
 ALTER TABLE `image`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT для таблицы `master`
