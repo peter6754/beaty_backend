@@ -227,15 +227,19 @@ class OrderController extends Controller
             $orderId = new Orders(["type" => 1, "user_id" => $this->user->id, "date" => time(), "price" => $coupon->price, "info" => $order->id]);
             $orderId->save();
 
-            $mrh_login = "beautyms.ru";
-            $mrh_pass1 = "dqqe66GzqsF91TPdLZh7";
+            $mrh_login = Yii::$app->params['robokassa_login'];
+            $mrh_pass1 = Yii::$app->params['robokassa_pass1'];
 
             $order->order_id = $orderId->id;
             $order->save();
 
             $crc = md5("$mrh_login:$order->price:$order->order_id:$mrh_pass1");
 
-            $url = "https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=$mrh_login&OutSum=$coupon->price&InvId=$order->order_id&Description=$coupon->name&SignatureValue=$crc&IsTest=1";
+            $resultUrl = urlencode('https://www.beautyms.ru/api/payment/result');
+            $successUrl = urlencode('https://www.beautyms.ru/success');
+            $failUrl = urlencode('https://www.beautyms.ru/fail');
+            
+            $url = "https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=$mrh_login&OutSum=$coupon->price&InvId=$order->order_id&Description=$coupon->name&SignatureValue=$crc&IsTest=" . Yii::$app->params['robokassa_test'] . "&ResultURL=$resultUrl&SuccessURL=$successUrl&FailURL=$failUrl";
 
             $model->price = $order->price;
             $model->order_coupon_id = $order->id;

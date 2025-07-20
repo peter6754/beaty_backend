@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Июл 15 2025 г., 21:56
+-- Время создания: Июл 20 2025 г., 01:31
 -- Версия сервера: 8.0.42-0ubuntu0.24.04.1
--- Версия PHP: 8.3.6
+-- Версия PHP: 8.3.23
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -41,6 +41,7 @@ INSERT INTO `auth_assignment` (`item_name`, `user_id`, `created_at`) VALUES
 ('admin', '1', 1752496260),
 ('admin', '14', 1725434768),
 ('admin', '2', 1720082643),
+('client', '1', 1752920433),
 ('client', '10', 1725385064),
 ('client', '11', 1725385624),
 ('client', '12', 1725386955),
@@ -57,6 +58,7 @@ INSERT INTO `auth_assignment` (`item_name`, `user_id`, `created_at`) VALUES
 ('client', '7', 1724690762),
 ('client', '8', 1725284455),
 ('client', '9', 1725385045),
+('master', '2', 1752974979),
 ('master', '3', 1752497640);
 
 -- --------------------------------------------------------
@@ -164,14 +166,14 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `active`, `name`, `color`, `image_path`, `image_id`) VALUES
-(1, 1, 'Макияж', '#a9d0ed', '/images/storage/image-by-item-and-alias.png', 14),
-(2, 1, 'Ресницы', '#bdb7eb', '/images/storage/image-by-item-and-aflias.png', 15),
-(3, 1, 'Ногти', '#e6b6ba', NULL, NULL),
-(4, 1, 'Волосы', '#ffc897', NULL, NULL),
-(5, 1, 'Массаж', '#dfb0fd', NULL, NULL),
-(6, 1, 'Брови', '#aad09f', NULL, NULL),
-(7, 1, 'Перманент', '#97aecf', NULL, NULL),
-(8, 1, 'Эпиляция', '#fe8ccd', NULL, NULL);
+(1, 1, 'Макияж', '#a9d0ed', '/images/storage/image-by-item-and.png', 16),
+(2, 1, 'Ресницы', '#bdb7eb', '/images/storage/image-by-item-and-aliasfff.png', 24),
+(3, 1, 'Ногти', '#e6b6ba', '/images/storage/image-by-item-and-alias.png', 18),
+(4, 1, 'Волосы', '#ffc897', '/images/storage/image-by-item-and-aliasg.png', 20),
+(5, 1, 'Массаж', '#dfb0fd', '/images/storage/image-by-item-anddd.png', 21),
+(6, 1, 'Брови', '#aad09f', '/images/storage/image-by-item-anddd_1.png', 28),
+(7, 1, 'Перманент', '#97aecf', '/images/storage/image-fby-item-and-alias.png', 26),
+(8, 1, 'Эпиляция', '#fe8ccd', '/images/storage/imeeage-by-item-and-aflias.png', 27);
 
 -- --------------------------------------------------------
 
@@ -277,8 +279,14 @@ INSERT INTO `image` (`id`, `filePath`, `itemId`, `isMain`, `modelName`, `urlAlia
 (8, 'Categories/Category8/cb0158.png', 8, NULL, 'Category', 'e877090f10-1', '', 0),
 (10, 'Coupons/Coupon1/58567c.png', 1, NULL, 'Coupon', '5fb969c6f4-1', '', 0),
 (12, 'Coupons/Coupon2/00d8f4.png', 2, NULL, 'Coupon', '6b8ddefe48-1', '', 0),
-(14, '/images/storage/image-by-item-and-alias.png', 1, 1, 'Category', 'image-by-item-and-alias.png', 'image-by-item-and-alias.png', 0),
-(15, '/images/storage/image-by-item-and-aflias.png', 2, 1, 'Category', 'image-by-item-and-aflias.png', 'image-by-item-and-aflias.png', 0);
+(16, '/images/storage/image-by-item-and.png', 1, 1, 'Category', 'image-by-item-and.png', 'image-by-item-and.png', 0),
+(18, '/images/storage/image-by-item-and-alias.png', 3, 1, 'Category', 'image-by-item-and-alias.png', 'image-by-item-and-alias.png', 0),
+(20, '/images/storage/image-by-item-and-aliasg.png', 4, 1, 'Category', 'image-by-item-and-aliasg.png', 'image-by-item-and-aliasg.png', 0),
+(21, '/images/storage/image-by-item-anddd.png', 5, 1, 'Category', 'image-by-item-anddd.png', 'image-by-item-anddd.png', 0),
+(24, '/images/storage/image-by-item-and-aliasfff.png', 2, 1, 'Category', 'image-by-item-and-aliasfff.png', 'image-by-item-and-aliasfff.png', 0),
+(26, '/images/storage/image-fby-item-and-alias.png', 7, 1, 'Category', 'image-fby-item-and-alias.png', 'image-fby-item-and-alias.png', 0),
+(27, '/images/storage/imeeage-by-item-and-aflias.png', 8, 1, 'Category', 'imeeage-by-item-and-aflias.png', 'imeeage-by-item-and-aflias.png', 0),
+(28, '/images/storage/image-by-item-anddd_1.png', 6, 1, 'Category', 'image-by-item-anddd_1.png', 'image-by-item-anddd_1.png', 0);
 
 -- --------------------------------------------------------
 
@@ -317,7 +325,8 @@ CREATE TABLE `master` (
 --
 
 INSERT INTO `master` (`id`, `user_id`, `balance`, `lastname`, `firstname`, `middlename`, `gender`, `birthday`, `date`, `search_radius`, `client_gender`, `status`, `work_lat`, `work_lon`, `live_lat`, `live_lon`, `work_city`, `work_street`, `work_house`, `live_city`, `live_street`, `live_house`, `order_id`) VALUES
-(1, 3, 0.00, 'fsdfs', 'пвапвапв', 'fdsfs', 1, 1752613200, 1752497640, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(1, NULL, 0.00, 'fsdfs', 'пвапвапв', 'fdsfs', 1, 1752613200, 1752497640, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 2, 0.00, 'fsdfs', 'пвапвапв', 'fdsfs', 1, 1752699600, 1752974979, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -357,7 +366,37 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `price`, `date`, `info`, `type`) VALUES
-(1, NULL, 99.00, 1720087477, 7, 1);
+(1, NULL, 99.00, 1720087477, 7, 1),
+(2, NULL, 99.00, 1752694535, 13, 1),
+(3, NULL, 99.00, 1752936512, 26, 1),
+(4, NULL, 99.00, 1752936749, 27, 1),
+(5, NULL, 99.00, 1752937383, 28, 1),
+(6, NULL, 99.00, 1752938001, 29, 1),
+(7, 1, 99.00, 1752939620, 30, 1),
+(8, 1, 99.00, 1752940066, 31, 1),
+(9, 1, 99.00, 1752940672, 32, 1),
+(10, 1, 99.00, 1752944931, 33, 1),
+(11, 1, 99.00, 1752945017, 34, 1),
+(12, 1, 99.00, 1752945484, 35, 1),
+(13, 1, 99.00, 1752945520, 36, 1),
+(14, 1, 99.00, 1752945650, 37, 1),
+(15, 1, 99.00, 1752945779, 38, 1),
+(16, 1, 99.00, 1752945906, 39, 1),
+(17, 1, 99.00, 1752947743, 40, 1),
+(18, 1, 99.00, 1752965087, 42, 1),
+(19, 1, 99.00, 1752965776, 43, 1),
+(20, 1, 99.00, 1752966146, 44, 1),
+(21, 1, 99.00, 1752966177, 45, 1),
+(22, 1, 99.00, 1752967312, 46, 1),
+(23, 1, 99.00, 1752967728, 47, 1),
+(24, 1, 99.00, 1752967871, 48, 1),
+(25, 1, 99.00, 1752968000, 49, 1),
+(26, 1, 99.00, 1752968852, 53, 1),
+(27, 1, 99.00, 1752968870, 54, 1),
+(28, 1, 99.00, 1752969185, 55, 1),
+(29, 1, 99.00, 1752969603, 56, 1),
+(30, 1, 99.00, 1752969863, 57, 1),
+(31, 1, 99.00, 1752969983, 58, 1);
 
 -- --------------------------------------------------------
 
@@ -395,7 +434,8 @@ CREATE TABLE `order_application` (
 
 INSERT INTO `order_application` (`id`, `user_id`, `name`, `phone`, `date`, `city`, `street`, `house`, `apartment`, `entrance`, `floor`, `intercom`, `time`, `price`, `order_coupon_id`, `lat`, `lon`, `product_id`, `comment`, `master_id`, `status`) VALUES
 (2, NULL, 'ильяс', 79991890133, 1720040400, 'г Ижевск ', 'ул Пушкинская', 'д 304', '3', '3', '4', '2', 15, 0.00, NULL, 56.8501, 53.2126, NULL, '', NULL, 0),
-(3, NULL, 'ильяс', 78999189013, 1720040400, 'г Ижевск', 'ул Кавказская', 'д 3 ', '3', '13', '4', '4', 14, 99.00, NULL, 56.8031, 53.1467, NULL, '', NULL, 0);
+(3, NULL, 'ильяс', 78999189013, 1720040400, 'г Ижевск', 'ул Кавказская', 'д 3 ', '3', '13', '4', '4', 14, 99.00, NULL, 56.8031, 53.1467, NULL, '', NULL, 0),
+(4, NULL, 'werwe', 78423423434, 1752613200, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '3', '1', 1, 99.00, 13, 0, 0, 3, '', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -425,10 +465,89 @@ INSERT INTO `order_coupon` (`id`, `user_id`, `coupon_id`, `price`, `date`, `orde
 (5, NULL, NULL, 99.00, 1720086454, NULL, 0),
 (6, NULL, NULL, 99.00, 1720086586, '17200865861327', 0),
 (7, NULL, NULL, 99.00, 1720087477, NULL, 0),
-(8, 1, 3, 99.00, 1752498724, 'test_1752498724', 0),
-(9, 1, 4, 99.00, 1752498769, 'test_1752498769', 0),
-(10, 1, 5, 99.00, 1752498772, 'test_1752498772', 0),
-(11, 1, 6, 99.00, 1752498776, 'test_1752498776', 0);
+(8, NULL, 3, 99.00, 1752498724, 'test_1752498724', 0),
+(9, NULL, 4, 99.00, 1752498769, 'test_1752498769', 0),
+(10, NULL, 5, 99.00, 1752498772, 'test_1752498772', 0),
+(11, NULL, 6, 99.00, 1752498776, 'test_1752498776', 0),
+(12, NULL, 3, 99.00, 1752694480, 'test_1752694480', 0),
+(13, NULL, 3, 99.00, 1752694535, '2', 0),
+(14, NULL, 4, 99.00, 1752694564, 'test_1752694564', 0),
+(15, NULL, 3, 99.00, 1752694662, 'test_1752694662', 0),
+(16, NULL, 3, 99.00, 1752694893, NULL, 0),
+(17, NULL, 4, 99.00, 1752694908, NULL, 0),
+(18, NULL, 3, 99.00, 1752920456, 'test_1752920456', 0),
+(19, NULL, 4, 99.00, 1752921459, 'test_1752921459', 0),
+(20, NULL, 3, 99.00, 1752921471, 'test_1752921471', 0),
+(21, NULL, 3, 99.00, 1752930485, 'test_1752930485', 0),
+(22, NULL, 3, 99.00, 1752930906, 'test_1752930906', 0),
+(23, NULL, 3, 99.00, 1752931110, NULL, 0),
+(24, NULL, 6, 99.00, 1752936406, NULL, 0),
+(25, NULL, 10, 99.00, 1752936423, NULL, 0),
+(26, NULL, 10, 99.00, 1752936512, NULL, 0),
+(27, NULL, 10, 99.00, 1752936749, NULL, 0),
+(28, NULL, 5, 99.00, 1752937383, NULL, 0),
+(29, NULL, 10, 99.00, 1752938001, NULL, 0),
+(30, 1, 10, 99.00, 1752939620, NULL, 0),
+(31, 1, 5, 99.00, 1752940066, NULL, 0),
+(32, 1, 13, 99.00, 1752940672, NULL, 0),
+(33, 1, 5, 99.00, 1752944931, NULL, 0),
+(34, 1, 4, 99.00, 1752945017, NULL, 0),
+(35, 1, 3, 99.00, 1752945484, NULL, 0),
+(36, 1, 4, 99.00, 1752945520, NULL, 0),
+(37, 1, 4, 99.00, 1752945650, NULL, 0),
+(38, 1, 4, 99.00, 1752945779, NULL, 0),
+(39, 1, 4, 99.00, 1752945906, NULL, 0),
+(40, 1, 4, 99.00, 1752947743, NULL, 0),
+(41, 1, 4, 99.00, 1752947920, 'test_1752947920', 0),
+(42, 1, 14, 99.00, 1752965087, NULL, 0),
+(43, 1, 22, 99.00, 1752965776, NULL, 0),
+(44, 1, 4, 99.00, 1752966146, NULL, 0),
+(45, 1, 4, 99.00, 1752966177, NULL, 0),
+(46, 1, 8, 99.00, 1752967312, NULL, 0),
+(47, 1, 4, 99.00, 1752967728, NULL, 0),
+(48, 1, 8, 99.00, 1752967871, NULL, 0),
+(49, 1, 4, 99.00, 1752968000, NULL, 0),
+(50, 1, 4, 99.00, 1752968291, 'test_1752968291', 0),
+(51, 1, 4, 99.00, 1752968313, 'test_1752968313', 0),
+(52, 1, 9, 1000.00, 1752968528, 'test_1752968528', 0),
+(53, 1, 4, 99.00, 1752968852, NULL, 0),
+(54, 1, 3, 99.00, 1752968870, NULL, 0),
+(55, 1, 4, 99.00, 1752969185, NULL, 0),
+(56, 1, 5, 99.00, 1752969603, NULL, 0),
+(57, 1, 5, 99.00, 1752969863, NULL, 0),
+(58, 1, 5, 99.00, 1752969983, NULL, 0),
+(59, 1, 4, 99.00, 1752970545, 'test_1752970545', 0),
+(60, 1, 4, 99.00, 1752970748, NULL, 0),
+(61, 1, 4, 99.00, 1752970761, NULL, 0),
+(62, 1, 4, 99.00, 1752970786, NULL, 0),
+(63, 1, 4, 99.00, 1752971009, '63', 0),
+(64, 1, 9, 1000.00, 1752971102, '64', 0),
+(65, 1, 12, 99.00, 1752971150, '65', 0),
+(66, 1, 11, 99.00, 1752971171, '66', 0),
+(67, 1, 17, 99.00, 1752971196, '67', 0),
+(68, 1, 20, 99.00, 1752971316, '68', 0),
+(69, 1, 24, 99.00, 1752971385, '69', 0),
+(70, 1, 20, 99.00, 1752971472, '70', 0),
+(71, 1, 22, 99.00, 1752971488, '71', 0),
+(72, 1, 25, 99.00, 1752971622, '72', 0),
+(73, 1, 29, 99.00, 1752971795, '73', 0),
+(74, 1, 4, 99.00, 1752971932, '74', 0),
+(75, 1, 24, 99.00, 1752971956, '75', 0),
+(76, 1, 4, 99.00, 1752971973, '76', 0),
+(77, 1, 4, 99.00, 1752972084, '77', 0),
+(78, 1, 4, 99.00, 1752972178, '78', 0),
+(79, 1, 4, 99.00, 1752972254, '79', 0),
+(80, 1, 4, 99.00, 1752972313, '80', 0),
+(81, 1, 4, 99.00, 1752972449, '81', 0),
+(82, 1, 4, 99.00, 1752972526, '82', 0),
+(83, 1, 4, 99.00, 1752972616, '83', 0),
+(84, 1, 4, 99.00, 1752972628, '84', 0),
+(85, 1, 4, 99.00, 1752972659, '85', 0),
+(86, 1, 4, 99.00, 1752972910, '86', 0),
+(87, 1, 4, 99.00, 1752972954, '87', 0),
+(88, 1, 4, 99.00, 1752972985, '88', 0),
+(89, 1, 4, 99.00, 1752973060, '89', 0),
+(90, 1, 3, 99.00, 1752973630, '90', 1);
 
 -- --------------------------------------------------------
 
@@ -519,9 +638,8 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `phone`, `name`, `email`, `fcm_token`, `token`, `password`) VALUES
-(1, 73433232323, 'Peter', 'peter@mail.com', NULL, 'onkM5f1EKNNEI5ooMKQEEavjoNRvoYvV', '$2y$13$XUFvqP8sMQZbs6oflb5K2O1f8fRQQCiknkfvS7Z4vAlI.QSmFRuUK'),
-(2, 74343434343, 'Dima', 'dima@mail.com', NULL, 'FU8UkH_Ukl88qCm2QP0uvyxncvtUCIH6', '$2y$13$zfv6tOa0HBfCXVFRrIwX3eMGuTMtroj2R46q7AT2cIIYnRx/HAkTe'),
-(3, 78423423434, 'fdsfs', 'fsfsd@mail.com', NULL, 'l0kCEmXOYWoygkQzbl8tYXCKnt5gYyA2', '$2y$13$d9.k1gdZAgkS67Wv5AzWN.hUhPFAmU2Zr8ElV7dcZguzNuuD2WFtK');
+(1, 73433232323, 'Peter', 'peter@mail.com', NULL, 'IZo72HuTku_NA7aUjzoQHpXjTPXnxIO0', '$2y$13$kubKnIiF3ZVWAFj2eW5Ch.akKE4coAEZ9MFpFPmO23aT9izBeEx.a'),
+(2, 78423423411, 'fdsfs', 'peterrr@mail.com', NULL, '4tK2_rzGUqN2YmRxxz5wFGgHnEfUBIY0', '$2y$13$sHTnU62P.2JMIdY/y3ml5OmLwvq14Ya1EYLi0pQWBp3pO1jgtkEUe');
 
 --
 -- Индексы сохранённых таблиц
@@ -646,7 +764,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT для таблицы `auth_code`
 --
 ALTER TABLE `auth_code`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=309;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=330;
 
 --
 -- AUTO_INCREMENT для таблицы `category`
@@ -670,31 +788,31 @@ ALTER TABLE `files`
 -- AUTO_INCREMENT для таблицы `image`
 --
 ALTER TABLE `image`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT для таблицы `master`
 --
 ALTER TABLE `master`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT для таблицы `order_application`
 --
 ALTER TABLE `order_application`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `order_coupon`
 --
 ALTER TABLE `order_coupon`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
 
 --
 -- AUTO_INCREMENT для таблицы `product`
@@ -706,7 +824,7 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT для таблицы `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц

@@ -13,7 +13,6 @@ use app\models\Coupon;
 use app\models\CouponForm;
 use app\models\OrderCoupon;
 use app\models\User;
-use YooKassa\Client;
 use yii\web\HttpException;
 
 class CouponController extends Controller
@@ -47,43 +46,29 @@ class CouponController extends Controller
             throw new HttpException(500, 'Ошибка при создании заказа');
         }
 
-        try {
-            // В режиме разработки просто симулируем успешный платеж
-            if (YII_ENV === 'dev') {
-                $order->order_id = 'test_'.time();
-                $order->save();
+        // Создание ссылки на оплату через Robokassa
+        $mrh_login = Yii::$app->params['robokassa_login'];
+        $mrh_pass1 = Yii::$app->params['robokassa_pass1'];
 
-                Yii::$app->session->setFlash('success', 'Платеж обработан (тестовый режим). Купон успешно приобретен!');
-                return $this->redirect(Yii::$app->homeUrl);
-            }
-
-            $client = new Client();
-            $client->setAuth(Yii::$app->params['yoomoney_shopid'], Yii::$app->params['yoomoney_secret']);
-            $response = $client->createPayment(
-                array(
-                    'amount' => array(
-                        'value' => $coupon->price,
-                        'currency' => 'RUB',
-                    ),
-                    'confirmation' => array(
-                        'type' => 'redirect',
-                        'locale' => 'ru_RU',
-                        'return_url' => 'https://beautyms.ru/',
-                    ),
-                    'capture' => true,
-                    'description' => $coupon->name
-                ),
-                "C".$order->id
-            );
-
-            $order->order_id = $response->getId();
-            $order->save();
-
-            return $this->redirect($response->getConfirmation()->getConfirmationUrl());
-        } catch (\Exception $e) {
-            Yii::error('Ошибка создания платежа: '.$e->getMessage());
-            throw new HttpException(500, 'Ошибка при создании платежа');
+        $order->order_id = (string) $order->id;
+        if (!$order->save()) {
+            throw new HttpException(500, 'Ошибка при обновлении заказа');
         }
+
+        $signatureString = "$mrh_login:$coupon->price:$order->order_id:$mrh_pass1";
+        $crc = md5($signatureString);
+        
+        // Отладочная информация
+        Yii::info("Robokassa signature debug: string='$signatureString', hash='$crc', env=" . YII_ENV, 'payment');
+
+        $resultUrl = urlencode('https://www.beautyms.ru/api/payment/result');
+        $successUrl = urlencode('https://www.beautyms.ru/success');
+        $failUrl = urlencode('https://www.beautyms.ru/fail');
+        $description = urlencode($coupon->name);
+
+        $url = "https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=$mrh_login&OutSum=$coupon->price&InvId=$order->order_id&Description=$description&SignatureValue=$crc&IsTest=" . Yii::$app->params['robokassa_test'] . "&ResultURL=$resultUrl&SuccessURL=$successUrl&FailURL=$failUrl";
+
+        return $this->redirect($url);
     }
 
     public function actionRegister()
@@ -125,47 +110,33 @@ class CouponController extends Controller
                     throw new HttpException(500, 'Ошибка при создании заказа');
                 }
 
-                try {
-                    // В режиме разработки просто симулируем успешный платеж
-                    if (YII_ENV === 'dev') {
-                        $order->order_id = 'test_'.time();
-                        $order->save();
+                // Создание ссылки на оплату через Robokassa
+                $mrh_login = Yii::$app->params['robokassa_login'];
+                $mrh_pass1 = Yii::$app->params['robokassa_pass1'];
 
-                        Yii::$app->response->format = Response::FORMAT_JSON;
-                        return [
-                            'status' => 'success',
-                            'message' => 'Платеж обработан (тестовый режим)',
-                            'redirect' => Yii::$app->homeUrl
-                        ];
-                    }
-
-                    $client = new Client();
-                    $client->setAuth(Yii::$app->params['yoomoney_shopid'], Yii::$app->params['yoomoney_secret']);
-                    $response = $client->createPayment(
-                        array(
-                            'amount' => array(
-                                'value' => $coupon->price,
-                                'currency' => 'RUB',
-                            ),
-                            'confirmation' => array(
-                                'type' => 'redirect',
-                                'locale' => 'ru_RU',
-                                'return_url' => 'https://beautyms.ru/',
-                            ),
-                            'capture' => true,
-                            'description' => $coupon->name
-                        ),
-                        "C".$order->id
-                    );
-
-                    $order->order_id = $response->getId();
-                    $order->save();
-
-                    return $this->redirect($response->getConfirmation()->getConfirmationUrl());
-                } catch (\Exception $e) {
-                    Yii::error('Ошибка создания платежа: '.$e->getMessage());
-                    throw new HttpException(500, 'Ошибка при создании платежа');
+                $order->order_id = (string) $order->id;
+                if (!$order->save()) {
+                    throw new HttpException(500, 'Ошибка при обновлении заказа');
                 }
+
+                $signatureString = "$mrh_login:$coupon->price:$order->order_id:$mrh_pass1";
+                $crc = md5($signatureString);
+                
+                // Отладочная информация
+                Yii::info("Robokassa signature debug: string='$signatureString', hash='$crc', env=" . YII_ENV, 'payment');
+
+                $resultUrl = urlencode('https://www.beautyms.ru/api/payment/result');
+                $successUrl = urlencode('https://www.beautyms.ru/success');
+                $failUrl = urlencode('https://www.beautyms.ru/fail');
+                $description = urlencode($coupon->name);
+
+                $url = "https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=$mrh_login&OutSum=$coupon->price&InvId=$order->order_id&Description=$description&SignatureValue=$crc&IsTest=" . Yii::$app->params['robokassa_test'] . "&ResultURL=$resultUrl&SuccessURL=$successUrl&FailURL=$failUrl";
+
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return [
+                    'status' => 'success',
+                    'redirect' => $url
+                ];
             } else {
                 Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
                 return \yii\widgets\ActiveForm::validate($model);

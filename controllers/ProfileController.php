@@ -13,7 +13,6 @@ use app\models\Coupon;
 use app\models\Category;
 use app\models\OrderApplication;
 use app\models\OrderCoupon;
-use YooKassa\Client;
 
 class ProfileController extends Controller
 {

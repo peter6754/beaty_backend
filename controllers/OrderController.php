@@ -17,7 +17,6 @@ use app\models\User;
 use app\models\Orders;
 use yii\web\HttpException;
 
-use YooKassa\Client;
 
 class OrderController extends Controller
 {
@@ -78,8 +77,8 @@ class OrderController extends Controller
                     throw new HttpException(500, 'Ошибка при создании основного заказа: '.json_encode($errors));
                 }
 
-                $mrh_login = "beautyms.ru";
-                $mrh_pass1 = "dqqe66GzqsF91TPdLZh7";
+                $mrh_login = Yii::$app->params['robokassa_login'];
+                $mrh_pass1 = Yii::$app->params['robokassa_pass1'];
 
                 $order->order_id = (string) $orderId->id;
                 if (! $order->save()) {
@@ -90,29 +89,12 @@ class OrderController extends Controller
 
                 $crc = md5("$mrh_login:$order->price:$order->order_id:$mrh_pass1");
 
-                $url = "https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=$mrh_login&OutSum=$coupon->price&InvId=$order->order_id&Description=$coupon->name&SignatureValue=$crc&IsTest=1";
+                $resultUrl = urlencode('https://www.beautyms.ru/api/payment/result');
+                $successUrl = urlencode('https://www.beautyms.ru/success');
+                $failUrl = urlencode('https://www.beautyms.ru/fail');
+                
+                $url = "https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=$mrh_login&OutSum=$coupon->price&InvId=$order->order_id&Description=$coupon->name&SignatureValue=$crc&IsTest=" . Yii::$app->params['robokassa_test'] . "&ResultURL=$resultUrl&SuccessURL=$successUrl&FailURL=$failUrl";
 
-                //                $client = new Client();
-//                $client->setAuth(Yii::$app->params['yoomoney_shopid'], Yii::$app->params['yoomoney_secret']);
-//                $response = $client->createPayment(
-//                    array(
-//                        'amount' => array(
-//                            'value' => $coupon->price,
-//                            'currency' => 'RUB',
-//                        ),
-//                        'confirmation' => array(
-//                            'type' => 'redirect',
-//                            'locale' => 'ru_RU',
-//                            'return_url' => 'https://beautyms.ru/',
-//                        ),
-//                        'capture' => true,
-//                        'description' => $coupon->name
-//                    ),
-//                    "C" . $order->id
-//                );
-//
-//                $order->order_id = $response->getId();
-//                $order->save();
 
                 $model->price = $order->price;
                 $model->order_coupon_id = $order->id;

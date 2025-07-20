@@ -1,5 +1,16 @@
 <?php
 
+// Init .env
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
+$dotenv->load();
+
+if (! function_exists('env')) {
+    function env($key, $default = null)
+    {
+        return $_ENV[$key] ?? $default;
+    }
+}
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 

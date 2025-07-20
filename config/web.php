@@ -91,7 +91,7 @@ $config = [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'levels' => ['error', 'warning', 'info'],
                 ],
             ],
         ],
@@ -102,6 +102,9 @@ $config = [
             'rules' => [
                 'api/order/list/<id:\d+>' => 'api/order/list',
                 'api/order/coupon/<id:\d+>' => 'api/order/coupon',
+                'api/payment/result' => 'api/payment/result',
+                'success' => 'payment/success',
+                'fail' => 'payment/fail',
                 'api/swagger' => 'api/swagger/default/doc',
                 'api/swagger.json' => 'api/swagger/default/api',
             ],
@@ -132,7 +135,8 @@ $config = [
             'profile/*',
             'debug/*',
             'coupon/*',
-            'admin/*'
+            'admin/*',
+            'payment/*'
         ]
     ],
     'params' => $params,

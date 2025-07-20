@@ -8,7 +8,6 @@ use yii\web\HttpException;
 use app\models\MasterForm;
 use app\models\Master;
 use yii\helpers\Url;
-use YooKassa\Client;
 
 use OpenApi\Attributes as OA;
 
@@ -77,30 +76,27 @@ class MasterController extends BaseController
             return ["success" => false, "message" => $this->getError($master)];
         }
 
-        $client = new Client();
-        $client->setAuth(Yii::$app->params['yoomoney_shopid'], Yii::$app->params['yoomoney_secret']);
-        $response = $client->createPayment(
-            array(
-                'amount' => array(
-                    'value' => 199,
-                    'currency' => 'RUB',
-                ),
-                'confirmation' => array(
-                    'type' => 'redirect',
-                    'locale' => 'ru_RU',
-                    'return_url' => YII_ENV_DEV ? 'http://localhost:8080/site/register-master' : 'https://beautyms.ru/site/register-master',
-                ),
-                'capture' => true,
-                'description' => "Пошлина регистрации мастером"
-            ),
-            "M".$master->id
-        );
+        // Создание ссылки на оплату через Robokassa для регистрации мастера
+        $mrh_login = Yii::$app->params['robokassa_login'];
+        $mrh_pass1 = Yii::$app->params['robokassa_pass1'];
+        $amount = 199; // 199 рублей при регистрации мастером
 
+        $master->order_id = (string) $master->id;
         $master->birthday = date("d.m.Y", $master->birthday);
-        $master->order_id = $response->getId();
-        $master->save();
+        if (!$master->save()) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => $this->getError($master)];
+        }
 
-        return ["success" => true, "url" => $this->redirect($response->getConfirmation()->getConfirmationUrl())];
+        $crc = md5("$mrh_login:$amount:$master->order_id:$mrh_pass1");
+
+        $resultUrl = urlencode('https://www.beautyms.ru/api/payment/result');
+        $successUrl = urlencode('https://www.beautyms.ru/success');
+        $failUrl = urlencode('https://www.beautyms.ru/fail');
+
+        $url = "https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=$mrh_login&OutSum=$amount&InvId=$master->order_id&Description=Пошлина регистрации мастером&SignatureValue=$crc&IsTest=" . Yii::$app->params['robokassa_test'] . "&ResultURL=$resultUrl&SuccessURL=$successUrl&FailURL=$failUrl";
+
+        return ["success" => true, "url" => $url];
 
     }
 
