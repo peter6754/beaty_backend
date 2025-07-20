@@ -3,9 +3,14 @@
 namespace app\models;
 
 use Yii;
+use yii\web\UploadedFile;
 
 class Image extends \yii\db\ActiveRecord
 {
+    const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const UPLOAD_DIR = '/images/storage/';
+
     /**
      * {@inheritdoc}
      */
@@ -20,53 +25,56 @@ class Image extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['filePath', 'modelName', 'urlAlias'], 'required'],
+            [['filePath', 'modelName'], 'required'],
             [['itemId', 'isMain', 'sorted'], 'integer'],
-            [['filePath', 'urlAlias'], 'string', 'max' => 400],
+            [['filePath'], 'string', 'max' => 400],
             [['modelName'], 'string', 'max' => 150],
-            [['name'], 'string', 'max' => 80],
+            [['name', 'urlAlias'], 'string', 'max' => 255],
         ];
     }
 
     /**
-     * Создать или найти существующее изображение
+     * Создать изображение из загруженного файла
      */
-    public static function createFromUpload($uploadedFile)
+    public static function createFromUpload(UploadedFile $uploadedFile, $modelName, $itemId = null)
     {
-        if (! $uploadedFile || $uploadedFile->error !== UPLOAD_ERR_OK) {
+        if (!$uploadedFile || $uploadedFile->error !== UPLOAD_ERR_OK) {
             return null;
         }
 
-        // Генерируем безопасное имя файла
-        $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $uploadedFile->baseName);
-        $safeName = trim($safeName, '_');
-        if (empty($safeName)) {
-            $safeName = 'image_'.time();
+        // Проверяем размер файла
+        if ($uploadedFile->size > self::MAX_FILE_SIZE) {
+            throw new \Exception('Файл слишком большой. Максимальный размер: ' . (self::MAX_FILE_SIZE / 1024 / 1024) . 'MB');
         }
 
-        // Проверяем уникальность имени файла
-        $fileName = $safeName.'.'.$uploadedFile->extension;
-        $uploadDir = '/images/storage/';
-        $fullUploadDir = Yii::getAlias('@webroot').$uploadDir;
+        // Проверяем расширение файла
+        $extension = strtolower($uploadedFile->extension);
+        if (!in_array($extension, self::ALLOWED_EXTENSIONS)) {
+            throw new \Exception('Недопустимый тип файла. Разрешены: ' . implode(', ', self::ALLOWED_EXTENSIONS));
+        }
 
-        if (! is_dir($fullUploadDir)) {
+        // Генерируем безопасное имя файла
+        $safeName = self::generateSafeName($uploadedFile->baseName);
+        $fileName = $safeName . '.' . $extension;
+        
+        // Создаем директорию если не существует
+        $fullUploadDir = Yii::getAlias('@webroot') . self::UPLOAD_DIR;
+        if (!is_dir($fullUploadDir)) {
             mkdir($fullUploadDir, 0755, true);
         }
 
-        $counter = 1;
-        while (file_exists($fullUploadDir.$fileName)) {
-            $fileName = $safeName.'_'.$counter.'.'.$uploadedFile->extension;
-            $counter++;
-        }
+        // Обеспечиваем уникальность имени файла
+        $fileName = self::ensureUniqueFileName($fullUploadDir, $fileName, $safeName, $extension);
 
         // Сохраняем файл
-        $uploadPath = $fullUploadDir.$fileName;
+        $uploadPath = $fullUploadDir . $fileName;
         if ($uploadedFile->saveAs($uploadPath)) {
             // Создаем запись в БД
             $image = new self();
-            $image->filePath = $uploadDir.$fileName;
+            $image->filePath = self::UPLOAD_DIR . $fileName;
             $image->name = $fileName;
-            $image->modelName = 'Category'; // Можно адаптировать под разные модели
+            $image->modelName = $modelName;
+            $image->itemId = $itemId;
             $image->urlAlias = $fileName;
             $image->isMain = 1;
             $image->sorted = 0;
@@ -80,21 +88,54 @@ class Image extends \yii\db\ActiveRecord
     }
 
     /**
+     * Генерирует безопасное имя файла
+     */
+    private static function generateSafeName($originalName)
+    {
+        $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalName);
+        $safeName = trim($safeName, '_');
+        
+        if (empty($safeName)) {
+            $safeName = 'image_' . time() . '_' . rand(1000, 9999);
+        }
+        
+        return $safeName;
+    }
+
+    /**
+     * Обеспечивает уникальность имени файла
+     */
+    private static function ensureUniqueFileName($uploadDir, $fileName, $safeName, $extension)
+    {
+        $counter = 1;
+        while (file_exists($uploadDir . $fileName)) {
+            $fileName = $safeName . '_' . $counter . '.' . $extension;
+            $counter++;
+        }
+        return $fileName;
+    }
+
+    /**
      * Получить URL изображения
      */
     public function getUrl()
     {
+        // Проверяем существование файла
+        if (!$this->fileExists()) {
+            return $this->getPlaceholderUrl();
+        }
+
         // Для консольного приложения формируем простой URL
-        if (! (Yii::$app instanceof \yii\web\Application)) {
+        if (!(Yii::$app instanceof \yii\web\Application)) {
             return $this->filePath;
         }
 
         $baseUrl = Yii::$app->request->baseUrl;
+        $filePath = $this->filePath;
 
         // Убеждаемся, что filePath начинается с /
-        $filePath = $this->filePath;
-        if (! empty($filePath) && $filePath[0] !== '/') {
-            $filePath = '/'.$filePath;
+        if (!empty($filePath) && $filePath[0] !== '/') {
+            $filePath = '/' . $filePath;
         }
 
         // Если baseUrl пустой или ".", убираем его
@@ -102,7 +143,7 @@ class Image extends \yii\db\ActiveRecord
             return $filePath;
         }
 
-        return $baseUrl.$filePath;
+        return $baseUrl . $filePath;
     }
 
     /**
@@ -110,7 +151,52 @@ class Image extends \yii\db\ActiveRecord
      */
     public function getFilePath()
     {
-        return Yii::getAlias('@webroot').$this->filePath;
+        return Yii::getAlias('@webroot') . $this->filePath;
+    }
+
+    /**
+     * Проверить существование файла
+     */
+    public function fileExists()
+    {
+        return file_exists($this->getFilePath());
+    }
+
+    /**
+     * Получить URL плейсхолдера
+     */
+    public function getPlaceholderUrl()
+    {
+        $baseUrl = (Yii::$app instanceof \yii\web\Application && Yii::$app->request)
+            ? Yii::$app->request->baseUrl
+            : '';
+        return $baseUrl . '/images/placeholder.svg';
+    }
+
+    /**
+     * Удалить изображение
+     */
+    public function deleteImage()
+    {
+        $filePath = $this->getFilePath();
+        if (file_exists($filePath)) {
+            @unlink($filePath);
+        }
+        return $this->delete();
+    }
+
+    /**
+     * Обновить связанную модель при изменении изображения
+     */
+    public function updateRelatedModel($oldImageId = null)
+    {
+        // Удаляем старое изображение если оно есть и отличается
+        if ($oldImageId && $oldImageId != $this->id) {
+            $oldImage = self::findOne($oldImageId);
+            if ($oldImage) {
+                $oldImage->deleteImage();
+            }
+        }
     }
 
     /**
@@ -136,16 +222,26 @@ class Image extends \yii\db\ActiveRecord
         $deletedCount = 0;
 
         foreach ($unusedImages as $image) {
-            if (! $image->isUsed()) {
-                $filePath = $image->getFilePath();
-                if (file_exists($filePath)) {
-                    @unlink($filePath);
-                }
-                $image->delete();
+            if (!$image->isUsed()) {
+                $image->deleteImage();
                 $deletedCount++;
             }
         }
 
         return $deletedCount;
+    }
+
+    /**
+     * Получить изображения по модели
+     */
+    public static function findByModel($modelName, $itemId = null)
+    {
+        $query = self::find()->where(['modelName' => $modelName]);
+        
+        if ($itemId !== null) {
+            $query->andWhere(['itemId' => $itemId]);
+        }
+        
+        return $query->orderBy(['isMain' => SORT_DESC, 'sorted' => SORT_ASC]);
     }
 }

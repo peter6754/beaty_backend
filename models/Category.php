@@ -19,7 +19,7 @@ class Category extends \yii\db\ActiveRecord
             'name',
             'color',
             'image_path',
-            'image_id'   
+            'image_id'
         ];
     }
 
@@ -61,38 +61,41 @@ class Category extends \yii\db\ActiveRecord
     public function upload()
     {
         if ($this->image && $this->image->error === UPLOAD_ERR_OK) {
-            // Используем существующую таблицу image
-            $image = Image::createFromUpload($this->image);
+            try {
+                $image = Image::createFromUpload($this->image, 'Category', null);
 
-            if ($image) {
-                // Связываем изображение с категорией
-                $image->itemId = $this->id; // ID текущей категории
-                $image->modelName = 'Category';
-                $image->save();
+                if ($image) {
+                    $oldImageId = $this->image_id;
 
-                // Удаляем связь со старым изображением
-                $oldImageId = $this->image_id;
+                    // Устанавливаем новое изображение
+                    $this->image_id = $image->id;
+                    $this->image_path = $image->filePath;
 
-                // Устанавливаем новое изображение
-                $this->image_id = $image->id;
-                $this->image_path = $image->filePath; // Дублируем для совместимости
+                    // Удаляем старое изображение
+                    $image->updateRelatedModel($oldImageId);
 
-                // Если было старое изображение, удаляем его
-                if ($oldImageId && $oldImageId != $image->id) {
-                    $oldImage = Image::findOne($oldImageId);
-                    if ($oldImage) {
-                        $filePath = $oldImage->getFilePath();
-                        if (file_exists($filePath)) {
-                            @unlink($filePath);
-                        }
-                        $oldImage->delete();
-                    }
+                    return true;
                 }
-
-                return true;
+            } catch (\Exception $e) {
+                Yii::error('Ошибка загрузки изображения категории: '.$e->getMessage());
+                return false;
             }
         }
         return false;
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        // Обновляем itemId в связанном изображении
+        if ($this->image_id) {
+            $image = Image::findOne($this->image_id);
+            if ($image && $image->itemId != $this->id) {
+                $image->itemId = $this->id;
+                $image->save(false);
+            }
+        }
     }
 
     /**
@@ -100,12 +103,12 @@ class Category extends \yii\db\ActiveRecord
      */
     public function getImage()
     {
-        return $this->hasOne(\app\models\Image::class, ['id' => 'image_id']);
+        return $this->hasOne(Image::class, ['id' => 'image_id']);
     }
 
     /**
-     * Получить прямую ссылку на изображение категории
-     * @param string $size Размер изображения (не используется для прямых ссылок)
+     * Получить URL изображения категории
+     * @param string $size Размер изображения (не используется)
      * @return string URL изображения или плейсхолдер
      */
     public function getImageUrl($size = null)
@@ -144,7 +147,7 @@ class Category extends \yii\db\ActiveRecord
     }
 
     /**
-     * Getter для image_path
+     * Getter для image_path (для совместимости)
      */
     public function getImagePath()
     {
@@ -152,7 +155,7 @@ class Category extends \yii\db\ActiveRecord
     }
 
     /**
-     * Setter для image_path  
+     * Setter для image_path (для совместимости)
      */
     public function setImagePath($value)
     {

@@ -92,7 +92,7 @@ class CouponController extends Controller
                     }
 
                     // Сохраняем модель только если нет ошибок
-                    if (! $model->hasErrors() && $model->save()) {
+                    if (! $model->hasErrors() && $model->save(false)) { // false = пропускаем валидацию, т.к. уже валидировали
                         return $this->redirect(['view', 'id' => $model->id]);
                     }
                 }
@@ -137,7 +137,7 @@ class CouponController extends Controller
                 }
 
                 // Сохраняем модель только если нет ошибок
-                if (! $model->hasErrors() && $model->save()) {
+                if (! $model->hasErrors() && $model->save(false)) { // false = пропускаем валидацию, т.к. уже валидировали
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }

@@ -20,6 +20,7 @@ class Coupon extends \yii\db\ActiveRecord
             'description',
             'amount',
             'price',
+            'image_id',
             'image_path'
         ];
     }
@@ -39,9 +40,9 @@ class Coupon extends \yii\db\ActiveRecord
     {
         return [
             [['category_id', 'name', 'description', 'amount', 'price'], 'required'],
-            [['category_id'], 'integer'],
+            [['category_id', 'image_id'], 'integer'],
             [['amount', 'price'], 'number'],
-            [['image'], 'safe'],
+            [['image'], 'file', 'extensions' => implode(', ', Image::ALLOWED_EXTENSIONS), 'maxSize' => Image::MAX_FILE_SIZE],
             [['description'], 'string'],
             [['name', 'image_path'], 'string', 'max' => 255],
         ];
@@ -50,6 +51,14 @@ class Coupon extends \yii\db\ActiveRecord
     public function getCategory()
     {
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
+    }
+
+    /**
+     * Связь с изображением
+     */
+    public function getImage()
+    {
+        return $this->hasOne(Image::class, ['id' => 'image_id']);
     }
 
     /**
@@ -71,61 +80,69 @@ class Coupon extends \yii\db\ActiveRecord
     public function upload()
     {
         if ($this->image && $this->image->error === UPLOAD_ERR_OK) {
-            // Создаем папку если её нет
-            $uploadDir = Yii::getAlias('@webroot/images/coupons/');
-            if (! is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
+            try {
 
-            // Безопасная очистка имени файла
-            $originalName = $this->image->baseName;
-            $extension = $this->image->extension;
+                $image = Image::createFromUpload($this->image, 'Coupon', null);
 
-            // Удаляем опасные символы и приводим к безопасному виду
-            $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalName);
-            $safeName = trim($safeName, '_');
+                if ($image) {
+                    $oldImageId = $this->image_id;
 
-            // Если имя пустое после очистки, используем timestamp
-            if (empty($safeName)) {
-                $safeName = 'image_'.time();
-            }
+                    // Устанавливаем новое изображение
+                    $this->image_id = $image->id;
+                    $this->image_path = $image->filePath;
 
-            // Проверяем уникальность и добавляем суффикс если нужно
-            $fileName = $safeName.'.'.$extension;
-            $uploadPath = $uploadDir.$fileName;
-            $counter = 1;
+                    // Удаляем старое изображение
+                    $image->updateRelatedModel($oldImageId);
 
-            while (file_exists($uploadPath)) {
-                $fileName = $safeName.'_'.$counter.'.'.$extension;
-                $uploadPath = $uploadDir.$fileName;
-                $counter++;
-            }
-
-            // Сохраняем файл
-            if ($this->image->saveAs($uploadPath)) {
-                // Удаляем старое изображение если есть
-                $oldImagePath = $this->getImagePath();
-                if ($oldImagePath) {
-                    $oldPath = Yii::getAlias('@webroot/').$oldImagePath;
-                    if (file_exists($oldPath)) {
-                        @unlink($oldPath);
-                    }
+                    return true;
                 }
-
-                $this->setImagePath('images/coupons/'.$fileName);
-                return true;
+            } catch (\Exception $e) {
+                Yii::error('Ошибка загрузки изображения купона: '.$e->getMessage());
+                return false;
             }
         }
         return false;
     }
 
     /**
-     * Получить прямую ссылку на изображение купона
-     * @param string $size Размер изображения (не используется для прямых ссылок)
+     * Обновляем itemId в изображении после сохранения модели
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        // Обновляем itemId в связанном изображении
+        if ($this->image_id) {
+            $image = Image::findOne($this->image_id);
+            if ($image && $image->itemId != $this->id) {
+                $image->itemId = $this->id;
+                $image->save(false);
+            }
+        }
+    }
+
+    /**
+     * Получить URL изображения купона
+     * @param string $size Размер изображения (не используется)
      * @return string URL изображения или плейсхолдер
      */
     public function getImageUrl($size = null)
     {
+        // Сначала пробуем получить изображение через новую систему
+        if ($this->image_id) {
+            $image = $this->image;
+            if ($image) {
+                return $image->getUrl();
+            }
+
+            // Если связь не работает, пробуем найти изображение напрямую
+            $image = Image::findOne($this->image_id);
+            if ($image) {
+                return $image->getUrl();
+            }
+        }
+
+        // Fallback на старую систему для совместимости
         $imagePath = $this->getImagePath();
         if ($imagePath) {
             $fullImagePath = Yii::getAlias('@webroot/').$imagePath;
@@ -145,7 +162,7 @@ class Coupon extends \yii\db\ActiveRecord
     }
 
     /**
-     * Getter для image_path
+     * Getter для image_path (для совместимости)
      */
     public function getImagePath()
     {
@@ -153,7 +170,7 @@ class Coupon extends \yii\db\ActiveRecord
     }
 
     /**
-     * Setter для image_path  
+     * Setter для image_path (для совместимости)
      */
     public function setImagePath($value)
     {
