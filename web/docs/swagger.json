@@ -543,7 +543,7 @@
                 "tags": [
                     "Master"
                 ],
-                "summary": "Регистрация мастера",
+                "summary": "Полная регистрация мастера с созданием пользователя",
                 "operationId": "b06a7c51e80c1818756f2932db3285be",
                 "requestBody": {
                     "required": true,
@@ -551,39 +551,43 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "middlename": {
-                                        "type": "string"
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+7(999) 123-45-67"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "master@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "password_repeat": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "lastname": {
+                                        "type": "string",
+                                        "example": "Иванов"
                                     },
                                     "firstname": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Иван"
+                                    },
+                                    "middlename": {
+                                        "type": "string",
+                                        "example": "Иванович"
+                                    },
+                                    "gender": {
+                                        "type": "integer",
+                                        "example": 1
                                     },
                                     "birthday": {
                                         "type": "string",
-                                        "format": "date"
-                                    },
-                                    "gender": {
-                                        "type": "integer"
-                                    },
-                                    "client_gender": {
-                                        "type": "integer"
-                                    },
-                                    "work_city": {
-                                        "type": "string"
-                                    },
-                                    "work_street": {
-                                        "type": "string"
-                                    },
-                                    "work_house": {
-                                        "type": "string"
-                                    },
-                                    "live_city": {
-                                        "type": "string"
-                                    },
-                                    "live_street": {
-                                        "type": "string"
-                                    },
-                                    "live_house": {
-                                        "type": "string"
+                                        "format": "date",
+                                        "example": "01.01.1990"
                                     }
                                 },
                                 "type": "object"
@@ -593,17 +597,31 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "URL для оплаты",
+                        "description": "Мастер успешно зарегистрирован",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean"
+                                            "type": "boolean",
+                                            "example": true
                                         },
-                                        "url": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Мастер успешно зарегистрирован"
+                                        },
+                                        "payment_url": {
                                             "type": "string",
                                             "format": "uri"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
+                                        },
+                                        "user_id": {
+                                            "type": "integer"
+                                        },
+                                        "master_id": {
+                                            "type": "integer"
                                         }
                                     },
                                     "type": "object"
@@ -612,17 +630,9 @@
                         }
                     },
                     "400": {
-                        "description": "Ошибка запроса"
-                    },
-                    "401": {
-                        "description": "Ошибка аутентификации"
+                        "description": "Ошибка валидации данных"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/api/master/profile": {
@@ -860,8 +870,16 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/order/time": {
@@ -906,8 +924,16 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/order/coupon/{id}": {
@@ -930,8 +956,16 @@
                 "responses": {
                     "200": {
                         "description": "HTML с информацией о купоне"
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/order/create": {

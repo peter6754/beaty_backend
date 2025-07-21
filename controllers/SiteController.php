@@ -193,8 +193,8 @@ class SiteController extends Controller
                     $amount = 199; // 199 рублей при регистрации мастером
 
                     $master->order_id = (string) $master->id;
-                    if (!$master->save()) {
-                        throw new HttpException(500, 'Ошибка при обновлении мастера');
+                    if (!$master->save(false)) { // Отключаем валидацию для обновления только order_id
+                        throw new \Exception('Ошибка при обновлении order_id мастера');
                     }
 
                     $crc = md5("$mrh_login:$amount:$master->order_id:$mrh_pass1");
@@ -204,11 +204,6 @@ class SiteController extends Controller
                     $failUrl = urlencode('https://www.beautyms.ru/fail');
 
                     $url = "https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=$mrh_login&OutSum=$amount&InvId=$master->order_id&Description=Пошлина регистрации мастером&SignatureValue=$crc&IsTest=" . Yii::$app->params['robokassa_test'] . "&ResultURL=$resultUrl&SuccessURL=$successUrl&FailURL=$failUrl";
-
-                    $master->birthday = date("d.m.Y", $master->birthday);
-                    if (! $master->save()) {
-                        throw new \Exception('Ошибка при сохранении данных мастера');
-                    }
 
                     return $this->redirect($url);
                 } else {

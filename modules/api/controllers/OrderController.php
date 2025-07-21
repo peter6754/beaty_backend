@@ -3,7 +3,6 @@
 namespace app\modules\api\controllers;
 
 use Yii;
-use yii\web\Controller;
 use yii\web\HttpException;
 use app\models\Product;
 use app\models\Coupon;
@@ -13,12 +12,13 @@ use app\models\Orders;
 
 use OpenApi\Attributes as OA;
 
-class OrderController extends Controller
+class OrderController extends BaseController
 {
     #[OA\Get(
         path: "/api/order/list/{id}",
         summary: "Получение списка продуктов для заказа",
         tags: ["Order"],
+        security: [["bearerAuth" => []]],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ],
@@ -37,12 +37,18 @@ class OrderController extends Controller
                         ))
                     ]
                 )
-            )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
         ]
     )]
     public function actionList($id)
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (! $this->user) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Token не найден"];
+        }
 
         $products = [];
         $product_query = Product::find()->where(["category_id" => $id])->all();
@@ -61,6 +67,7 @@ class OrderController extends Controller
         path: "/api/order/time",
         summary: "Получение доступного времени для заказа",
         tags: ["Order"],
+        security: [["bearerAuth" => []]],
         parameters: [
             new OA\Parameter(name: "date", in: "query", schema: new OA\Schema(type: "integer"))
         ],
@@ -78,12 +85,18 @@ class OrderController extends Controller
                         ))
                     ]
                 )
-            )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
         ]
     )]
     public function actionTime($date = 0)
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (! $this->user) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Token не найден"];
+        }
 
         $hour = (int) date("H", $date == 0 ? (time() + 7200) : strtotime("Y-m-d", $date));
 
@@ -102,6 +115,7 @@ class OrderController extends Controller
         path: "/api/order/coupon/{id}",
         summary: "Получение информации о купоне для продукта",
         tags: ["Order"],
+        security: [["bearerAuth" => []]],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ],
@@ -109,11 +123,17 @@ class OrderController extends Controller
             new OA\Response(
                 response: 200,
                 description: "HTML с информацией о купоне"
-            )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
         ]
     )]
     public function actionCoupon($id)
     {
+        if (! $this->user) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Token не найден"];
+        }
+
         $this->layout = false;
 
         $product = Product::findOne($id);

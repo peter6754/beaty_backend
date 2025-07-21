@@ -40,7 +40,10 @@ class Master extends \yii\db\ActiveRecord
 
     public function beforeSave($insert)
     {
-        $this->birthday = Yii::$app->global->convertDateToTime($this->birthday);
+        // Преобразуем дату только если она не является timestamp
+        if (is_string($this->birthday) && preg_match('/^\d{2}\.\d{2}\.\d{4}$/', $this->birthday)) {
+            $this->birthday = Yii::$app->global->convertDateToTime($this->birthday);
+        }
 
         if (parent::beforeSave($insert)) {
             return true;
