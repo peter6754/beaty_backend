@@ -1,4 +1,4 @@
-<div class="coupon_order" style="background-color: <?= $coupon->category->color ?>">
+<div class="coupon_order" style="background-color: <?= ($coupon && $coupon->category) ? $coupon->category->color : '#ffffff' ?>">
     <div class="row">
         <div class="col-md-4 col-4">
             <img src="<?= $coupon->getImageUrl("250x250") ?>" />

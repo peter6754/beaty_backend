@@ -4,6 +4,7 @@ namespace app\modules\api\controllers;
 
 use Yii;
 use yii\web\HttpException;
+use yii\web\NotFoundHttpException;
 use app\models\Product;
 use app\models\Coupon;
 use app\models\OrderApplication;
@@ -137,7 +138,16 @@ class OrderController extends BaseController
         $this->layout = false;
 
         $product = Product::findOne($id);
+        if (!$product) {
+            Yii::$app->response->statusCode = 404;
+            return ["success" => false, "message" => "Продукт не найден"];
+        }
+        
         $coupon = Coupon::findOne(["category_id" => $product->category_id]);
+        if (!$coupon) {
+            Yii::$app->response->statusCode = 404;
+            return ["success" => false, "message" => "Купон для данной категории не найден"];
+        }
 
         return $this->render("coupon", [
             "product" => $product,
