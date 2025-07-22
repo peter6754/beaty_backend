@@ -17,14 +17,14 @@ class BaseController extends Controller
         Yii::$app->language = $this->calculatei18nCode($browser_lang);
 
         $token = Yii::$app->request->headers->get('Authorization');
-        if($token) {
-            $token_array = explode(' ', $token);
-            if(count($token_array) == 2) {
-                $token = $token_array[1];
+        if ($token && strpos($token, 'Bearer ') === 0) {
+            $token = substr($token, 7);
+            $this->user = User::findIdentityByAccessToken($token);
+        } else {
+            if (! Yii::$app->user->isGuest) {
+                $this->user = Yii::$app->user->identity;
             }
         }
-
-        $this->user = User::findIdentityByAccessToken($token);
 
         $device = Yii::$app->request->headers->get('App-Device');
         $build = Yii::$app->request->headers->get('App-Build');
@@ -32,14 +32,16 @@ class BaseController extends Controller
         return parent::beforeAction($action);
     }
 
-    public static function calculatei18nCode($browser_lang) {
+    public static function calculatei18nCode($browser_lang)
+    {
 
         $code = substr($browser_lang, 0, 2);
 
         return $code;
     }
 
-    public static function getError($model) {
+    public static function getError($model)
+    {
         $errors = $model->getErrors();
         $array = array_shift($errors);
         return count($array) == 0 ? "Ошибка сервера" : $array[0];
