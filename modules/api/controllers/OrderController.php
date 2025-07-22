@@ -207,6 +207,7 @@ class OrderController extends BaseController
     )]
     public function actionCreate()
     {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         if (! $this->user) {
             Yii::$app->response->statusCode = 401;
@@ -214,7 +215,7 @@ class OrderController extends BaseController
         }
 
         $model = new OrderApplication();
-        $model->setAttributes($this->request->post());
+        $model->load($this->request->post());
         $model->user_id = $this->user->id;
 
         if ($model->order_coupon_id == 0) {
@@ -416,5 +417,19 @@ class OrderController extends BaseController
         }
 
         return $data;
+    }
+
+    public function actionValidation()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (Yii::$app->request->isAjax) {
+            $model = new OrderApplication();
+            if ($model->load($this->request->post()) && ! $model->validate()) {
+                return $this->getError($model);
+            }
+        }
+
+        return [];
     }
 }

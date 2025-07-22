@@ -306,6 +306,84 @@ class UserController extends BaseController
         return $this->getProfile($this->user);
     }
 
+    #[OA\PathItem(path: "/api/user/login")]
+    #[OA\Post(
+        path: "/api/user/login",
+        summary: "Аутентификация по номеру телефона и паролю",
+        tags: ["User"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "phone", type: "string", example: "79991234567"),
+                    new OA\Property(property: "password", type: "string", example: "password123")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Успешная аутентификация",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "access_token", type: "string", example: "someRandomString"),
+                        new OA\Property(property: "user", type: "object",
+                            properties: [
+                                new OA\Property(property: "id", type: "integer"),
+                                new OA\Property(property: "name", type: "string"),
+                                new OA\Property(property: "phone", type: "string"),
+                                new OA\Property(property: "email", type: "string")
+                            ]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса"),
+            new OA\Response(response: 401, description: "Неверные учетные данные")
+        ]
+    )]
+    public function actionLogin()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $phone = Yii::$app->request->post("phone");
+        $password = Yii::$app->request->post("password");
+
+        if (! $phone || ! $password) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Номер телефона и пароль обязательны"];
+        }
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        $user = User::findOne(["phone" => $cleanPhone]);
+
+        if (! $user) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Пользователь не найден"];
+        }
+
+        if (! $user->password) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Пароль не установлен. Используйте аутентификацию по SMS"];
+        }
+
+        if (! $user->validatePassword($password)) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Неверный пароль"];
+        }
+
+        $user->token = Yii::$app->security->generateRandomString();
+        if (! $user->save()) {
+            Yii::$app->response->statusCode = 500;
+            return ["success" => false, "message" => "Ошибка генерации токена"];
+        }
+
+        return [
+            "access_token" => $user->token,
+            "user" => $this->getProfile($user)
+        ];
+    }
+
     #[OA\PathItem(path: "/api/user/reset-password-request")]
     #[OA\Post(
         path: "/api/user/reset-password-request",

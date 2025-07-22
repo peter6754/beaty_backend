@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Июл 20 2025 г., 14:50
+-- Время создания: Июл 24 2025 г., 17:05
 -- Версия сервера: 8.0.42-0ubuntu0.24.04.1
 -- Версия PHP: 8.3.23
 
@@ -73,6 +73,13 @@ CREATE TABLE `auth_code` (
   `code` int NOT NULL,
   `date` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Дамп данных таблицы `auth_code`
+--
+
+INSERT INTO `auth_code` (`id`, `user_id`, `code`, `date`) VALUES
+(330, 4, 8959, 1753213788);
 
 -- --------------------------------------------------------
 
@@ -205,6 +212,26 @@ INSERT INTO `coupon` (`id`, `category_id`, `name`, `description`, `amount`, `pri
 (8, 1, 'Купон на услугу', 'Свадебный макияж', 500.00, 99.00, NULL, NULL),
 (9, 1, 'Купон на услугу', '2в1: пробный макияж и свадебный макияж', 199.00, 1000.00, NULL, NULL),
 (10, 6, 'Купон на услугу', 'Окрашивание + оформление бровей', 300.00, 99.00, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `favorite_master`
+--
+
+CREATE TABLE `favorite_master` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `master_id` int NOT NULL,
+  `created_at` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Дамп данных таблицы `favorite_master`
+--
+
+INSERT INTO `favorite_master` (`id`, `user_id`, `master_id`, `created_at`) VALUES
+(2, 1, 2, 1753216046);
 
 -- --------------------------------------------------------
 
@@ -376,9 +403,10 @@ INSERT INTO `orders` (`id`, `user_id`, `price`, `date`, `info`, `type`) VALUES
 (30, 1, 99.00, 1752969863, 57, 1),
 (31, 1, 99.00, 1752969983, 58, 1),
 (32, 2, 99.00, 1752987478, 92, 1),
-(33, 3, 99.00, 1752987568, 93, 1),
-(34, 3, 99.00, 1752987626, 94, 1),
-(35, 3, 99.00, 1752988134, 95, 1);
+(33, NULL, 99.00, 1752987568, 93, 1),
+(34, NULL, 99.00, 1752987626, 94, 1),
+(35, NULL, 99.00, 1752988134, 95, 1),
+(36, 1, 99.00, 1753254851, 96, 1);
 
 -- --------------------------------------------------------
 
@@ -419,9 +447,32 @@ INSERT INTO `order_application` (`id`, `user_id`, `name`, `phone`, `date`, `city
 (3, NULL, 'ильяс', 78999189013, 1720040400, 'г Ижевск', 'ул Кавказская', 'д 3 ', '3', '13', '4', '4', 14, 99.00, NULL, 56.8031, 53.1467, NULL, '', NULL, 0),
 (4, NULL, 'werwe', 78423423434, 1752613200, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '3', '1', 1, 99.00, 13, 0, 0, 3, '', NULL, 0),
 (5, 2, 'werwe', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '2', '3', '5', 10, 99.00, 92, 0, 0, 3, '', NULL, 0),
-(6, 3, 'рпар', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '3', '1', 9, 99.00, 93, 0, 0, 3, '', NULL, 0),
-(7, 3, 'рпар', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '2', '5', 10, 99.00, 94, 0, 0, 3, '', NULL, 0),
-(8, 3, 'рпар', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '3', '1', 10, 99.00, 95, 0, 0, 3, '', NULL, 0);
+(6, NULL, 'рпар', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '3', '1', 9, 99.00, 93, 0, 0, 3, '', NULL, 0),
+(7, NULL, 'рпар', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '2', '5', 10, 99.00, 94, 0, 0, 3, '', NULL, 0),
+(8, NULL, 'рпар', 78423423434, 1752958800, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '3', '1', 10, 99.00, 95, 0, 0, 3, '', NULL, 0),
+(9, 1, 'fdfsdff', 78423423434, 1753390800, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 5, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(10, 1, 'werwe', 78424234545, 1753909200, 'Bendery', 'Academician Fedorov Street', '1', '57', '3', '1', '2', 4, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(11, 1, 'werwe', 78423423434, 1753304400, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 3, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(12, 1, 'werwe', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 14, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(13, 1, 'werwe', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 4, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(14, 1, 'рпар', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 12, 99.00, 96, 0, 0, 4, '', NULL, 0),
+(15, 1, 'рпар', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 13, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(16, 1, 'werweh', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 18, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(17, 1, 'werwe', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 19, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(18, 1, 'рпар', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 20, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(19, 1, 'fdsf', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 19, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(20, 1, 'werwe', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 19, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(21, 1, 'fdgd', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 19, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(22, 1, 'werwe', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 20, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(23, 1, 'werwe', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 19, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(24, 1, 'werwe', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 19, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(25, 1, 'рпар', 78423423434, 1753218000, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 21, 0.00, NULL, 0, 0, 4, '', NULL, 0),
+(26, 1, 'авыа', 78423423434, 1753304400, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 18, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(27, 1, 'werwe', 78423423434, 1753304400, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 18, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(28, 1, 'werwe', 78423423434, 1753304400, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 18, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(29, 1, 'werwe', 78423423434, 1753304400, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 18, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(30, 5, 'gdfgd', 78423423434, 1753304400, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 22, 0.00, NULL, 0, 0, 3, '', NULL, 0),
+(31, 5, 'werwe', 78423423434, 1753304400, 'Bendery', 'Academician Fedorov Street', '1', '57', '1', '1', '1', 22, 0.00, NULL, 0, 0, 4, '', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -536,9 +587,10 @@ INSERT INTO `order_coupon` (`id`, `user_id`, `coupon_id`, `price`, `date`, `orde
 (90, 1, 3, 99.00, 1752973630, '90', 1),
 (91, 2, 4, 99.00, 1752987431, '91', 0),
 (92, 2, 3, 99.00, 1752987478, '32', 0),
-(93, 3, 3, 99.00, 1752987568, '33', 0),
-(94, 3, 3, 99.00, 1752987626, '34', 0),
-(95, 3, 3, 99.00, 1752988134, '35', 0);
+(93, NULL, 3, 99.00, 1752987568, '33', 0),
+(94, NULL, 3, 99.00, 1752987626, '34', 0),
+(95, NULL, 3, 99.00, 1752988134, '35', 0),
+(96, 1, 3, 99.00, 1753254851, '36', 0);
 
 -- --------------------------------------------------------
 
@@ -611,6 +663,28 @@ INSERT INTO `product` (`id`, `category_id`, `name`, `price`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `review`
+--
+
+CREATE TABLE `review` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `master_id` int NOT NULL,
+  `rating` int NOT NULL,
+  `comment` text,
+  `created_at` int NOT NULL
+) ;
+
+--
+-- Дамп данных таблицы `review`
+--
+
+INSERT INTO `review` (`id`, `user_id`, `master_id`, `rating`, `comment`, `created_at`) VALUES
+(1, 1, 1, 5, 'Отличный мастер, рекомендую!', 1753216576);
+
+-- --------------------------------------------------------
+
+--
 -- Структура таблицы `user`
 --
 
@@ -629,9 +703,10 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `phone`, `name`, `email`, `fcm_token`, `token`, `password`) VALUES
-(1, 73433232323, 'Peter', 'peter@mail.com', NULL, 'IZo72HuTku_NA7aUjzoQHpXjTPXnxIO0', '$2y$13$kubKnIiF3ZVWAFj2eW5Ch.akKE4coAEZ9MFpFPmO23aT9izBeEx.a'),
+(1, 73433232323, 'Peter', 'peter@mail.com', NULL, 'xZig6uJ0WtSNrqAhzbrJpZPTBg1VBBWA', '$2y$13$kubKnIiF3ZVWAFj2eW5Ch.akKE4coAEZ9MFpFPmO23aT9izBeEx.a'),
 (2, 78423423411, 'fdsfs', 'peterrr@mail.com', NULL, '4tK2_rzGUqN2YmRxxz5wFGgHnEfUBIY0', '$2y$13$sHTnU62P.2JMIdY/y3ml5OmLwvq14Ya1EYLi0pQWBp3pO1jgtkEUe'),
-(3, 78423423434, 'рпар', NULL, NULL, 'UL4aTE0FxzbotD_3D4Y7GXcqabKHO0Rj', '$2y$13$Dag7FEpBU5QDi7IqhF2fFegh5O7iuOjhoBLHRQtc6RG3kYHMfNoou');
+(4, 79991234567, NULL, NULL, NULL, NULL, NULL),
+(5, 71111111111, 'dima', 'dima@mail.com', NULL, 'dSuvtyWH0gG-QYRwaRUcYh4dTIiXQyI0', '$2y$13$G6CwMg09R3lzGqpOqZnHHeuo1wygs/ekBHdG7r5L2xI/fb5/WDbEW');
 
 --
 -- Индексы сохранённых таблиц
@@ -689,6 +764,14 @@ ALTER TABLE `coupon`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`),
   ADD KEY `idx_coupon_image_id` (`image_id`);
+
+--
+-- Индексы таблицы `favorite_master`
+--
+ALTER TABLE `favorite_master`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_user_master` (`user_id`,`master_id`),
+  ADD KEY `master_id` (`master_id`);
 
 --
 -- Индексы таблицы `files`
@@ -755,6 +838,14 @@ ALTER TABLE `product`
   ADD KEY `category_id` (`category_id`);
 
 --
+-- Индексы таблицы `review`
+--
+ALTER TABLE `review`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_master_id` (`master_id`),
+  ADD KEY `idx_user_id` (`user_id`);
+
+--
 -- Индексы таблицы `user`
 --
 ALTER TABLE `user`
@@ -771,7 +862,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT для таблицы `auth_code`
 --
 ALTER TABLE `auth_code`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=330;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=331;
 
 --
 -- AUTO_INCREMENT для таблицы `category`
@@ -784,6 +875,12 @@ ALTER TABLE `category`
 --
 ALTER TABLE `coupon`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+
+--
+-- AUTO_INCREMENT для таблицы `favorite_master`
+--
+ALTER TABLE `favorite_master`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `files`
@@ -807,19 +904,19 @@ ALTER TABLE `master`
 -- AUTO_INCREMENT для таблицы `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT для таблицы `order_application`
 --
 ALTER TABLE `order_application`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT для таблицы `order_coupon`
 --
 ALTER TABLE `order_coupon`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT для таблицы `product`
@@ -828,10 +925,16 @@ ALTER TABLE `product`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
+-- AUTO_INCREMENT для таблицы `review`
+--
+ALTER TABLE `review`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT для таблицы `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
@@ -876,6 +979,13 @@ ALTER TABLE `coupon`
   ADD CONSTRAINT `fk_coupon_image_id` FOREIGN KEY (`image_id`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
+-- Ограничения внешнего ключа таблицы `favorite_master`
+--
+ALTER TABLE `favorite_master`
+  ADD CONSTRAINT `favorite_master_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `favorite_master_ibfk_2` FOREIGN KEY (`master_id`) REFERENCES `master` (`id`) ON DELETE CASCADE;
+
+--
 -- Ограничения внешнего ключа таблицы `master`
 --
 ALTER TABLE `master`
@@ -908,6 +1018,13 @@ ALTER TABLE `order_coupon`
 --
 ALTER TABLE `product`
   ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `review`
+--
+ALTER TABLE `review`
+  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`master_id`) REFERENCES `master` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
