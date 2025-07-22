@@ -623,6 +623,280 @@
                 ]
             }
         },
+        "/api/user/create-review": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Создание отзыва о мастере",
+                "operationId": "e6392b8e5be889079a4573adb23509ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "master_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "rating": {
+                                        "type": "integer",
+                                        "maximum": 5,
+                                        "minimum": 1,
+                                        "example": 5
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Отличный мастер, рекомендую!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Отзыв создан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Отзыв успешно добавлен"
+                                        },
+                                        "review_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка запроса"
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/master-reviews": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Получение отзывов о мастере",
+                "operationId": "f93e561a9a7142a46c2ddb7511ebf50c",
+                "parameters": [
+                    {
+                        "name": "master_id",
+                        "in": "query",
+                        "description": "ID мастера",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Количество элементов на странице",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Отзывы о мастере",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "reviews": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "rating": {
+                                                        "type": "integer"
+                                                    },
+                                                    "comment": {
+                                                        "type": "string"
+                                                    },
+                                                    "user_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "master_stats": {
+                                            "properties": {
+                                                "average_rating": {
+                                                    "type": "number"
+                                                },
+                                                "total_reviews": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer"
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "pages": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка запроса"
+                    }
+                }
+            }
+        },
+        "/api/user/my-reviews": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Получение отзывов пользователя",
+                "operationId": "8ea2ca4851b52b2480e51d8265d224cd",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Количество элементов на странице",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Отзывы пользователя",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "reviews": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "master_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "master_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "rating": {
+                                                        "type": "integer"
+                                                    },
+                                                    "comment": {
+                                                        "type": "string"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer"
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "pages": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/category/list": {
             "get": {
                 "tags": [

@@ -15,6 +15,7 @@ use app\models\AuthCode;
 use app\models\AffiliateHistory;
 use app\models\FavoriteMaster;
 use app\models\Master;
+use app\models\Review;
 use yii\helpers\Url;
 use OpenApi\Attributes as OA;
 
@@ -720,6 +721,332 @@ class UserController extends BaseController
 
         return [
             'masters' => $result,
+            'pagination' => [
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+    }
+
+    #[OA\PathItem(path: "/api/user/create-review")]
+    #[OA\Post(
+        path: "/api/user/create-review",
+        summary: "Создание отзыва о мастере",
+        tags: ["User"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "master_id", type: "integer", example: 1),
+                    new OA\Property(property: "rating", type: "integer", minimum: 1, maximum: 5, example: 5),
+                    new OA\Property(property: "comment", type: "string", example: "Отличный мастер, рекомендую!")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Отзыв создан",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Отзыв успешно добавлен"),
+                        new OA\Property(property: "review_id", type: "integer", example: 1)
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса"),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
+    public function actionCreateReview()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (! $this->user) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Token не найден"];
+        }
+
+        $masterId = (int) Yii::$app->request->post("master_id");
+        $rating = (int) Yii::$app->request->post("rating");
+        $comment = trim(Yii::$app->request->post("comment", ""));
+
+        if (! $masterId || ! $rating) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "ID мастера и рейтинг обязательны"];
+        }
+
+        if ($rating < 1 || $rating > 5) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Рейтинг должен быть от 1 до 5"];
+        }
+
+        // Проверяем существование мастера
+        $master = Master::findOne($masterId);
+        if (! $master) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Мастер не найден"];
+        }
+
+        // Проверяем, не оставлял ли уже пользователь отзыв этому мастеру
+        $existingReview = Review::findOne([
+            'user_id' => $this->user->id,
+            'master_id' => $masterId
+        ]);
+
+        if ($existingReview) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Вы уже оставляли отзыв этому мастеру"];
+        }
+
+        // Создаем отзыв
+        $review = new Review([
+            'user_id' => $this->user->id,
+            'master_id' => $masterId,
+            'rating' => $rating,
+            'comment' => $comment
+        ]);
+
+        if (! $review->save()) {
+            Yii::$app->response->statusCode = 500;
+            return ["success" => false, "message" => "Ошибка создания отзыва"];
+        }
+
+        return [
+            "success" => true,
+            "message" => "Отзыв успешно добавлен",
+            "review_id" => $review->id
+        ];
+    }
+
+    #[OA\PathItem(path: "/api/user/master-reviews")]
+    #[OA\Get(
+        path: "/api/user/master-reviews",
+        summary: "Получение отзывов о мастере",
+        tags: ["User"],
+        parameters: [
+            new OA\Parameter(
+                name: "master_id",
+                description: "ID мастера",
+                in: "query",
+                required: true,
+                schema: new OA\Schema(type: "integer")
+            ),
+            new OA\Parameter(
+                name: "page",
+                description: "Номер страницы",
+                in: "query",
+                schema: new OA\Schema(type: "integer", default: 1)
+            ),
+            new OA\Parameter(
+                name: "limit",
+                description: "Количество элементов на странице",
+                in: "query",
+                schema: new OA\Schema(type: "integer", default: 20, maximum: 100)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Отзывы о мастере",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "reviews",
+                            type: "array",
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: "id", type: "integer"),
+                                    new OA\Property(property: "rating", type: "integer"),
+                                    new OA\Property(property: "comment", type: "string"),
+                                    new OA\Property(property: "user_name", type: "string"),
+                                    new OA\Property(property: "created_at", type: "integer")
+                                ]
+                            )
+                        ),
+                        new OA\Property(property: "master_stats", type: "object",
+                            properties: [
+                                new OA\Property(property: "average_rating", type: "number"),
+                                new OA\Property(property: "total_reviews", type: "integer")
+                            ]
+                        ),
+                        new OA\Property(property: "pagination", type: "object",
+                            properties: [
+                                new OA\Property(property: "page", type: "integer"),
+                                new OA\Property(property: "limit", type: "integer"),
+                                new OA\Property(property: "total", type: "integer"),
+                                new OA\Property(property: "pages", type: "integer")
+                            ]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса")
+        ]
+    )]
+    public function actionMasterReviews()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $masterId = (int) Yii::$app->request->get("master_id");
+        $page = (int) Yii::$app->request->get('page', 1);
+        $limit = min((int) Yii::$app->request->get('limit', 20), 100);
+
+        if (! $masterId) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "ID мастера обязателен"];
+        }
+
+        // Проверяем существование мастера
+        $master = Master::findOne($masterId);
+        if (! $master) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Мастер не найден"];
+        }
+
+        $query = Review::find()
+            ->with('user')
+            ->where(['master_id' => $masterId])
+            ->orderBy(['created_at' => SORT_DESC]);
+
+        // Получаем общее количество
+        $total = $query->count();
+
+        // Применяем пагинацию
+        $offset = ($page - 1) * $limit;
+        $reviews = $query->offset($offset)->limit($limit)->all();
+
+        $result = [];
+        foreach ($reviews as $review) {
+            $result[] = [
+                'id' => $review->id,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'user_name' => $review->user ? $review->user->name : 'Аноним',
+                'created_at' => $review->created_at
+            ];
+        }
+
+        // Статистика мастера
+        $averageRating = Review::getAverageRating($masterId);
+        $totalReviews = Review::getReviewsCount($masterId);
+
+        return [
+            'reviews' => $result,
+            'master_stats' => [
+                'average_rating' => $averageRating ? round($averageRating, 1) : null,
+                'total_reviews' => $totalReviews
+            ],
+            'pagination' => [
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+    }
+
+    #[OA\PathItem(path: "/api/user/my-reviews")]
+    #[OA\Get(
+        path: "/api/user/my-reviews",
+        summary: "Получение отзывов пользователя",
+        tags: ["User"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: "page",
+                description: "Номер страницы",
+                in: "query",
+                schema: new OA\Schema(type: "integer", default: 1)
+            ),
+            new OA\Parameter(
+                name: "limit",
+                description: "Количество элементов на странице",
+                in: "query",
+                schema: new OA\Schema(type: "integer", default: 20, maximum: 100)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Отзывы пользователя",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "reviews",
+                            type: "array",
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: "id", type: "integer"),
+                                    new OA\Property(property: "master_id", type: "integer"),
+                                    new OA\Property(property: "master_name", type: "string"),
+                                    new OA\Property(property: "rating", type: "integer"),
+                                    new OA\Property(property: "comment", type: "string"),
+                                    new OA\Property(property: "created_at", type: "integer")
+                                ]
+                            )
+                        ),
+                        new OA\Property(property: "pagination", type: "object",
+                            properties: [
+                                new OA\Property(property: "page", type: "integer"),
+                                new OA\Property(property: "limit", type: "integer"),
+                                new OA\Property(property: "total", type: "integer"),
+                                new OA\Property(property: "pages", type: "integer")
+                            ]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
+    public function actionMyReviews()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (! $this->user) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Token не найден"];
+        }
+
+        $page = (int) Yii::$app->request->get('page', 1);
+        $limit = min((int) Yii::$app->request->get('limit', 20), 100);
+
+        $query = Review::find()
+            ->with('master')
+            ->where(['user_id' => $this->user->id])
+            ->orderBy(['created_at' => SORT_DESC]);
+
+        // Получаем общее количество
+        $total = $query->count();
+
+        // Применяем пагинацию
+        $offset = ($page - 1) * $limit;
+        $reviews = $query->offset($offset)->limit($limit)->all();
+
+        $result = [];
+        foreach ($reviews as $review) {
+            $masterName = 'Неизвестно';
+            if ($review->master) {
+                $masterName = trim($review->master->firstname . ' ' . $review->master->middlename);
+            }
+
+            $result[] = [
+                'id' => $review->id,
+                'master_id' => $review->master_id,
+                'master_name' => $masterName,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'created_at' => $review->created_at
+            ];
+        }
+
+        return [
+            'reviews' => $result,
             'pagination' => [
                 'page' => $page,
                 'limit' => $limit,
