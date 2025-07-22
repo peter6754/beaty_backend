@@ -303,6 +303,172 @@ class UserController extends BaseController
         return $this->getProfile($this->user);
     }
 
+    #[OA\PathItem(path: "/api/user/reset-password-request")]
+    #[OA\Post(
+        path: "/api/user/reset-password-request",
+        summary: "Запрос сброса пароля по номеру телефона",
+        tags: ["User"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "phone", type: "string", example: "79991234567")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Код сброса пароля отправлен",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Код сброса пароля отправлен"),
+                        new OA\Property(property: "debugCode", type: "integer", example: 1234)
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса")
+        ]
+    )]
+    public function actionResetPasswordRequest()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $phone = Yii::$app->request->post("phone");
+
+        if (! $phone) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Номер телефона не указан"];
+        }
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        $user = User::findOne(["phone" => $cleanPhone]);
+        
+        if (! $user) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Пользователь с таким номером телефона не найден"];
+        }
+
+        // Удаляем предыдущие коды сброса пароля для этого пользователя
+        AuthCode::deleteAll(['user_id' => $user->id]);
+
+        // Генерируем новый код для сброса пароля
+        $code = rand(1000, 9999);
+        $authCode = new AuthCode([
+            "user_id" => $user->id, 
+            "code" => $code, 
+            "date" => time()
+        ]);
+        
+        if (! $authCode->save()) {
+            Yii::$app->response->statusCode = 500;
+            return ["success" => false, "message" => "Ошибка создания кода сброса"];
+        }
+
+        // Отправляем SMS с кодом сброса пароля
+        Yii::$app->sms->send($cleanPhone, 'Ваш код для сброса пароля: ' . $code);
+
+        return [
+            "success" => true, 
+            "message" => "Код сброса пароля отправлен", 
+            "debugCode" => $authCode->code
+        ];
+    }
+
+    #[OA\PathItem(path: "/api/user/reset-password")]
+    #[OA\Post(
+        path: "/api/user/reset-password",
+        summary: "Сброс пароля с подтверждением кода",
+        tags: ["User"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "phone", type: "string", example: "79991234567"),
+                    new OA\Property(property: "code", type: "string", example: "1234"),
+                    new OA\Property(property: "password", type: "string", example: "newPassword123")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Пароль успешно изменен",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Пароль успешно изменен"),
+                        new OA\Property(property: "access_token", type: "string", example: "someRandomString")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса")
+        ]
+    )]
+    public function actionResetPassword()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $phone = Yii::$app->request->post("phone");
+        $code = Yii::$app->request->post("code");
+        $password = Yii::$app->request->post("password");
+
+        if (! $phone || ! $code || ! $password) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Все поля обязательны для заполнения"];
+        }
+
+        if (strlen($password) < 6) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Пароль должен содержать минимум 6 символов"];
+        }
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        $user = User::findOne(["phone" => $cleanPhone]);
+        
+        if (! $user) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Пользователь не найден"];
+        }
+
+        // Проверяем код подтверждения
+        $authCode = AuthCode::findOne([
+            "user_id" => $user->id, 
+            "code" => $code
+        ]);
+        
+        if (! $authCode) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Неверный код подтверждения"];
+        }
+
+        // Проверяем, не истек ли код (15 минут)
+        if (time() - $authCode->date > 900) {
+            $authCode->delete();
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Код подтверждения истек"];
+        }
+
+        // Обновляем пароль пользователя
+        $user->password = Yii::$app->security->generatePasswordHash($password);
+        $user->token = Yii::$app->security->generateRandomString();
+        
+        if (! $user->save()) {
+            Yii::$app->response->statusCode = 500;
+            return ["success" => false, "message" => "Ошибка обновления пароля"];
+        }
+
+        // Удаляем использованный код
+        $authCode->delete();
+
+        return [
+            "success" => true,
+            "message" => "Пароль успешно изменен",
+            "access_token" => $user->token
+        ];
+    }
+
     protected function getProfile($user)
     {
 

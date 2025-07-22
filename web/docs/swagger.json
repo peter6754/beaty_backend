@@ -284,6 +284,122 @@
                 ]
             }
         },
+        "/api/user/reset-password-request": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Запрос сброса пароля по номеру телефона",
+                "operationId": "89497bc4156b60429b45f81b739aa263",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "79991234567"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Код сброса пароля отправлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Код сброса пароля отправлен"
+                                        },
+                                        "debugCode": {
+                                            "type": "integer",
+                                            "example": 1234
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка запроса"
+                    }
+                }
+            }
+        },
+        "/api/user/reset-password": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Сброс пароля с подтверждением кода",
+                "operationId": "9e53101b581d1bf5c16d33164bc6bf61",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "79991234567"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "1234"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "newPassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Пароль успешно изменен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Пароль успешно изменен"
+                                        },
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "someRandomString"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка запроса"
+                    }
+                }
+            }
+        },
         "/api/category/list": {
             "get": {
                 "tags": [
