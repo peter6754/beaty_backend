@@ -13,6 +13,8 @@ use app\models\Chart;
 use app\models\Affiliate;
 use app\models\AuthCode;
 use app\models\AffiliateHistory;
+use app\models\FavoriteMaster;
+use app\models\Master;
 use yii\helpers\Url;
 use OpenApi\Attributes as OA;
 
@@ -466,6 +468,264 @@ class UserController extends BaseController
             "success" => true,
             "message" => "Пароль успешно изменен",
             "access_token" => $user->token
+        ];
+    }
+
+    #[OA\PathItem(path: "/api/user/favorite-master")]
+    #[OA\Post(
+        path: "/api/user/favorite-master",
+        summary: "Добавление мастера в избранное",
+        tags: ["User"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "master_id", type: "integer", example: 1)
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Мастер добавлен в избранное",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Мастер добавлен в избранное")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса"),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
+    public function actionFavoriteMaster()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (! $this->user) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Token не найден"];
+        }
+
+        $masterId = (int) Yii::$app->request->post("master_id");
+
+        if (! $masterId) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "ID мастера не указан"];
+        }
+
+        // Проверяем существование мастера
+        $master = Master::findOne($masterId);
+        if (! $master) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Мастер не найден"];
+        }
+
+        // Проверяем, не добавлен ли уже мастер в избранное
+        $existingFavorite = FavoriteMaster::findOne([
+            'user_id' => $this->user->id,
+            'master_id' => $masterId
+        ]);
+
+        if ($existingFavorite) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Мастер уже в избранном"];
+        }
+
+        // Добавляем в избранное
+        $favorite = new FavoriteMaster([
+            'user_id' => $this->user->id,
+            'master_id' => $masterId
+        ]);
+
+        if (! $favorite->save()) {
+            Yii::$app->response->statusCode = 500;
+            return ["success" => false, "message" => "Ошибка добавления в избранное"];
+        }
+
+        return [
+            "success" => true,
+            "message" => "Мастер добавлен в избранное"
+        ];
+    }
+
+    #[OA\PathItem(path: "/api/user/unfavorite-master")]
+    #[OA\Post(
+        path: "/api/user/unfavorite-master",
+        summary: "Удаление мастера из избранного",
+        tags: ["User"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "master_id", type: "integer", example: 1)
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Мастер удален из избранного",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Мастер удален из избранного")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Ошибка запроса"),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
+    public function actionUnfavoriteMaster()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (! $this->user) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Token не найден"];
+        }
+
+        $masterId = (int) Yii::$app->request->post("master_id");
+
+        if (! $masterId) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "ID мастера не указан"];
+        }
+
+        // Ищем запись в избранном
+        $favorite = FavoriteMaster::findOne([
+            'user_id' => $this->user->id,
+            'master_id' => $masterId
+        ]);
+
+        if (! $favorite) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => "Мастер не найден в избранном"];
+        }
+
+        if (! $favorite->delete()) {
+            Yii::$app->response->statusCode = 500;
+            return ["success" => false, "message" => "Ошибка удаления из избранного"];
+        }
+
+        return [
+            "success" => true,
+            "message" => "Мастер удален из избранного"
+        ];
+    }
+
+    #[OA\PathItem(path: "/api/user/favorite-masters")]
+    #[OA\Get(
+        path: "/api/user/favorite-masters",
+        summary: "Получение списка избранных мастеров",
+        tags: ["User"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: "page",
+                description: "Номер страницы",
+                in: "query",
+                schema: new OA\Schema(type: "integer", default: 1)
+            ),
+            new OA\Parameter(
+                name: "limit",
+                description: "Количество элементов на странице",
+                in: "query",
+                schema: new OA\Schema(type: "integer", default: 20, maximum: 100)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Список избранных мастеров",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "masters",
+                            type: "array",
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: "id", type: "integer"),
+                                    new OA\Property(property: "firstname", type: "string"),
+                                    new OA\Property(property: "middlename", type: "string"),
+                                    new OA\Property(property: "lastname", type: "string"),
+                                    new OA\Property(property: "gender", type: "integer"),
+                                    new OA\Property(property: "work_city", type: "string"),
+                                    new OA\Property(property: "work_street", type: "string"),
+                                    new OA\Property(property: "work_house", type: "string"),
+                                    new OA\Property(property: "status", type: "integer"),
+                                    new OA\Property(property: "added_at", type: "integer")
+                                ]
+                            )
+                        ),
+                        new OA\Property(property: "pagination", type: "object",
+                            properties: [
+                                new OA\Property(property: "page", type: "integer"),
+                                new OA\Property(property: "limit", type: "integer"),
+                                new OA\Property(property: "total", type: "integer"),
+                                new OA\Property(property: "pages", type: "integer")
+                            ]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: "Ошибка аутентификации")
+        ]
+    )]
+    public function actionFavoriteMasters()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (! $this->user) {
+            Yii::$app->response->statusCode = 401;
+            return ["success" => false, "message" => "Token не найден"];
+        }
+
+        $page = (int) Yii::$app->request->get('page', 1);
+        $limit = min((int) Yii::$app->request->get('limit', 20), 100);
+
+        $query = FavoriteMaster::find()
+            ->with('master')
+            ->where(['user_id' => $this->user->id])
+            ->orderBy(['created_at' => SORT_DESC]);
+
+        // Получаем общее количество
+        $total = $query->count();
+
+        // Применяем пагинацию
+        $offset = ($page - 1) * $limit;
+        $favorites = $query->offset($offset)->limit($limit)->all();
+
+        $result = [];
+        foreach ($favorites as $favorite) {
+            if ($favorite->master) {
+                $result[] = [
+                    'id' => $favorite->master->id,
+                    'firstname' => $favorite->master->firstname,
+                    'middlename' => $favorite->master->middlename,
+                    'lastname' => $favorite->master->lastname,
+                    'gender' => $favorite->master->gender,
+                    'work_city' => $favorite->master->work_city,
+                    'work_street' => $favorite->master->work_street,
+                    'work_house' => $favorite->master->work_house,
+                    'status' => $favorite->master->status,
+                    'added_at' => $favorite->created_at
+                ];
+            }
+        }
+
+        return [
+            'masters' => $result,
+            'pagination' => [
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total,
+                'pages' => ceil($total / $limit)
+            ]
         ];
     }
 

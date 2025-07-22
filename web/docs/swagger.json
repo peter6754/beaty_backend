@@ -400,6 +400,229 @@
                 }
             }
         },
+        "/api/user/favorite-master": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Добавление мастера в избранное",
+                "operationId": "8c8d5f3a2b4446219057befdd264c4dd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "master_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Мастер добавлен в избранное",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Мастер добавлен в избранное"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка запроса"
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/unfavorite-master": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Удаление мастера из избранного",
+                "operationId": "a4dad4782cae2d2f5e3fed4fd466957c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "master_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Мастер удален из избранного",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Мастер удален из избранного"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка запроса"
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/favorite-masters": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Получение списка избранных мастеров",
+                "operationId": "815fe22b13bff36e93a34b6b4e170239",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Количество элементов на странице",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список избранных мастеров",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "masters": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "firstname": {
+                                                        "type": "string"
+                                                    },
+                                                    "middlename": {
+                                                        "type": "string"
+                                                    },
+                                                    "lastname": {
+                                                        "type": "string"
+                                                    },
+                                                    "gender": {
+                                                        "type": "integer"
+                                                    },
+                                                    "work_city": {
+                                                        "type": "string"
+                                                    },
+                                                    "work_street": {
+                                                        "type": "string"
+                                                    },
+                                                    "work_house": {
+                                                        "type": "string"
+                                                    },
+                                                    "status": {
+                                                        "type": "integer"
+                                                    },
+                                                    "added_at": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer"
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "pages": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/category/list": {
             "get": {
                 "tags": [
@@ -938,6 +1161,129 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/master/list": {
+            "get": {
+                "tags": [
+                    "Master"
+                ],
+                "summary": "Получение списка мастеров",
+                "operationId": "cb88334555475c9cf7c01ba8dbce5640",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Количество элементов на странице",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "description": "Фильтр по городу работы",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "gender",
+                        "in": "query",
+                        "description": "Фильтр по полу мастера",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Фильтр по статусу мастера",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список мастеров",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "masters": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "firstname": {
+                                                        "type": "string"
+                                                    },
+                                                    "middlename": {
+                                                        "type": "string"
+                                                    },
+                                                    "lastname": {
+                                                        "type": "string"
+                                                    },
+                                                    "gender": {
+                                                        "type": "integer"
+                                                    },
+                                                    "work_city": {
+                                                        "type": "string"
+                                                    },
+                                                    "work_street": {
+                                                        "type": "string"
+                                                    },
+                                                    "work_house": {
+                                                        "type": "string"
+                                                    },
+                                                    "status": {
+                                                        "type": "integer"
+                                                    },
+                                                    "date": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer"
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "pages": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/order/list/{id}": {

@@ -296,6 +296,140 @@ class MasterController extends BaseController
         return ["success" => true, "url" => $url];
     }
 
+    #[OA\Get(
+        path: "/api/master/list",
+        summary: "Получение списка мастеров",
+        tags: ["Master"],
+        parameters: [
+            new OA\Parameter(
+                name: "page",
+                description: "Номер страницы",
+                in: "query",
+                schema: new OA\Schema(type: "integer", default: 1)
+            ),
+            new OA\Parameter(
+                name: "limit",
+                description: "Количество элементов на странице",
+                in: "query",
+                schema: new OA\Schema(type: "integer", default: 20, maximum: 100)
+            ),
+            new OA\Parameter(
+                name: "city",
+                description: "Фильтр по городу работы",
+                in: "query",
+                schema: new OA\Schema(type: "string")
+            ),
+            new OA\Parameter(
+                name: "gender",
+                description: "Фильтр по полу мастера",
+                in: "query",
+                schema: new OA\Schema(type: "integer")
+            ),
+            new OA\Parameter(
+                name: "status",
+                description: "Фильтр по статусу мастера",
+                in: "query",
+                schema: new OA\Schema(type: "integer")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Список мастеров",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: "masters",
+                            type: "array",
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: "id", type: "integer"),
+                                    new OA\Property(property: "firstname", type: "string"),
+                                    new OA\Property(property: "middlename", type: "string"),
+                                    new OA\Property(property: "lastname", type: "string"),
+                                    new OA\Property(property: "gender", type: "integer"),
+                                    new OA\Property(property: "work_city", type: "string"),
+                                    new OA\Property(property: "work_street", type: "string"),
+                                    new OA\Property(property: "work_house", type: "string"),
+                                    new OA\Property(property: "status", type: "integer"),
+                                    new OA\Property(property: "date", type: "integer")
+                                ]
+                            )
+                        ),
+                        new OA\Property(property: "pagination", type: "object",
+                            properties: [
+                                new OA\Property(property: "page", type: "integer"),
+                                new OA\Property(property: "limit", type: "integer"),
+                                new OA\Property(property: "total", type: "integer"),
+                                new OA\Property(property: "pages", type: "integer")
+                            ]
+                        )
+                    ]
+                )
+            )
+        ]
+    )]
+    public function actionList()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $page = (int) Yii::$app->request->get('page', 1);
+        $limit = min((int) Yii::$app->request->get('limit', 20), 100);
+        $city = Yii::$app->request->get('city');
+        $gender = Yii::$app->request->get('gender');
+        $status = Yii::$app->request->get('status');
+
+        $query = Master::find()
+            ->with('user')
+            ->orderBy(['date' => SORT_DESC]);
+
+        // Применяем фильтры
+        if ($city) {
+            $query->andWhere(['like', 'work_city', $city]);
+        }
+        
+        if ($gender !== null) {
+            $query->andWhere(['gender' => $gender]);
+        }
+        
+        if ($status !== null) {
+            $query->andWhere(['status' => $status]);
+        }
+
+        // Получаем общее количество
+        $total = $query->count();
+
+        // Применяем пагинацию
+        $offset = ($page - 1) * $limit;
+        $masters = $query->offset($offset)->limit($limit)->all();
+
+        $result = [];
+        foreach ($masters as $master) {
+            $result[] = [
+                'id' => $master->id,
+                'firstname' => $master->firstname,
+                'middlename' => $master->middlename,
+                'lastname' => $master->lastname,
+                'gender' => $master->gender,
+                'work_city' => $master->work_city,
+                'work_street' => $master->work_street,
+                'work_house' => $master->work_house,
+                'status' => $master->status,
+                'date' => $master->date
+            ];
+        }
+
+        return [
+            'masters' => $result,
+            'pagination' => [
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+    }
+
     protected function getProfile($user)
     {
 
