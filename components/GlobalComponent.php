@@ -4,13 +4,14 @@ namespace app\components;
 use Yii;
 use yii\base\Component;
 use app\models\Users;
+use DateTime;
 
 class GlobalComponent extends Component {
 
     static function convertDateToTime($date)
     {
-        $array = strptime($date, '%d.%m.%Y');
-        return mktime(0, 0, 0, $array['tm_mon']+1, $array['tm_mday'], $array['tm_year']+1900);
+        $dateTime = DateTime::createFromFormat('d.m.Y', $date);
+        return $dateTime ? $dateTime->getTimestamp() : false;
     }
 
     static function translit($text)
