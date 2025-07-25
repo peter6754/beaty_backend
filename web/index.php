@@ -1,8 +1,12 @@
 <?php
 
-// Production environment settings
-defined('YII_DEBUG') or define('YII_DEBUG', false);
+// Production environment settings with debugging enabled
+defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'dev');
+
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
