@@ -163,18 +163,19 @@ class OrderController extends BaseController
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "order_coupon_id", type: "integer"),
-                    new OA\Property(property: "name", type: "string"),
-                    new OA\Property(property: "phone", type: "string"),
-                    new OA\Property(property: "city", type: "string"),
-                    new OA\Property(property: "street", type: "string"),
-                    new OA\Property(property: "house", type: "string"),
-                    new OA\Property(property: "apartment", type: "string"),
-                    new OA\Property(property: "entrance", type: "string"),
-                    new OA\Property(property: "floor", type: "string"),
-                    new OA\Property(property: "intercom", type: "string"),
-                    new OA\Property(property: "date", type: "string", format: "date"),
-                    new OA\Property(property: "time", type: "string")
+                    new OA\Property(property: "product_id", type: "integer", example: 3),
+                    new OA\Property(property: "order_coupon_id", type: "integer", example: 0),
+                    new OA\Property(property: "name", type: "string", example: "Иван Иванов"),
+                    new OA\Property(property: "phone", type: "string", example: "+7(999) 999-99-99"),
+                    new OA\Property(property: "city", type: "string", example: "Москва"),
+                    new OA\Property(property: "street", type: "string", example: "Ленина"),
+                    new OA\Property(property: "house", type: "string", example: "1"),
+                    new OA\Property(property: "apartment", type: "string", example: "1"),
+                    new OA\Property(property: "entrance", type: "string", example: "1"),
+                    new OA\Property(property: "floor", type: "string", example: "1"),
+                    new OA\Property(property: "intercom", type: "string", example: "123"),
+                    new OA\Property(property: "date", type: "string", format: "date", example: "11.08.2025"),
+                    new OA\Property(property: "time", type: "integer", example: 14)
                 ]
             )
         ),
@@ -213,15 +214,38 @@ class OrderController extends BaseController
             Yii::$app->response->statusCode = 401;
             return ["success" => false, "message" => "Token не найден"];
         }
-
+        
         $model = new OrderApplication();
-        $model->load($this->request->post());
+        $data = Yii::$app->request->getBodyParams();
+        
+        // If getBodyParams() is empty, try to parse raw JSON body
+        if (empty($data)) {
+            $rawBody = Yii::$app->request->getRawBody();
+            if (!empty($rawBody)) {
+                $data = json_decode($rawBody, true);
+            }
+        }
+        
+        // Log received data for debugging
+        Yii::info('Received data: ' . print_r($data, true), 'application');
+        
+        $model->setAttributes($data);
         $model->user_id = $this->user->id;
+        
+        // Set default values for required fields that may not be provided
+        if (empty($model->comment)) {
+            $model->comment = '';
+        }
 
         if ($model->order_coupon_id == 0) {
             $model->order_coupon_id = null;
         }
 
+        if (! $model->validate()) {
+            Yii::$app->response->statusCode = 400;
+            return ["success" => false, "message" => $this->getError($model)];
+        }
+        
         if (! $model->save()) {
             Yii::$app->response->statusCode = 400;
             return ["success" => false, "message" => $this->getError($model)];

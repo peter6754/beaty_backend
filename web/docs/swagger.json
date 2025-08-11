@@ -1786,42 +1786,58 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
                                     "order_coupon_id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "example": 0
                                     },
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Иван Иванов"
                                     },
                                     "phone": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "+7(999) 999-99-99"
                                     },
                                     "city": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Москва"
                                     },
                                     "street": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Ленина"
                                     },
                                     "house": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "1"
                                     },
                                     "apartment": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "1"
                                     },
                                     "entrance": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "1"
                                     },
                                     "floor": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "1"
                                     },
                                     "intercom": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "123"
                                     },
                                     "date": {
                                         "type": "string",
-                                        "format": "date"
+                                        "format": "date",
+                                        "example": "11.08.2025"
                                     },
                                     "time": {
-                                        "type": "string"
+                                        "type": "integer",
+                                        "example": 14
                                     }
                                 },
                                 "type": "object"
